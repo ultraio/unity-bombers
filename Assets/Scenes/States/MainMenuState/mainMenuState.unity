@@ -11830,7 +11830,12 @@ PrefabInstance:
     - target: {fileID: 452292849422199812, guid: 240274275c9e74767a0ccbc102cc1cf7,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OpenStore
+      value: OpenHangar
+      objectReference: {fileID: 0}
+    - target: {fileID: 452292849422199812, guid: 240274275c9e74767a0ccbc102cc1cf7,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: BrainCloudUNETExample.MainMenuState, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 453687130597390384, guid: 240274275c9e74767a0ccbc102cc1cf7,
         type: 3}

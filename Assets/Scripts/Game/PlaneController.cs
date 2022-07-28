@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using Gameframework;
+using System;
+using BrainCloud.LitJson;
+using System.IO;
 
 namespace BrainCloudUNETExample.Game
 {
@@ -101,8 +104,13 @@ namespace BrainCloudUNETExample.Game
 
             string teamBomberPath = "";
             bool bHasGoldWings = false;
+
+            /*
             if (PlayerController.MemberInfo.ExtraData.ContainsKey(GBomberRTTConfigManager.JSON_GOLD_WINGS))
                 bHasGoldWings = (bool)PlayerController.MemberInfo.ExtraData[GBomberRTTConfigManager.JSON_GOLD_WINGS];
+            */
+
+            
 
             if (PlayerController.m_team == 1)
             {
@@ -121,15 +129,40 @@ namespace BrainCloudUNETExample.Game
             SmartsComponent.SetActive(true);
             SmartsComponent.layer = PlayerController.m_team == 1 ? 21 : 22; // debug collisions
 
-            Transform graphicPivot = transform.FindDeepChild("PlaneGraphic");
-            GameObject graphic = (GameObject)Instantiate((GameObject)Resources.Load("Prefabs/Game/" + teamBomberPath), graphicPivot.position, graphicPivot.rotation);
-            graphic.transform.parent = graphicPivot;
-            graphic.transform.localPosition = Vector3.zero;
-            graphic.transform.localRotation = Quaternion.identity;
+            GameObject playerPlaneObject;
 
-            m_bulletSpawnPoint = graphic.transform.FindDeepChild("BulletSpawn");
-            m_leftContrail = graphic.transform.FindDeepChild("LeftSmokeTrail").GetComponent<ParticleSystem>();
-            m_rightContrail = graphic.transform.FindDeepChild("RightSmokeTrail").GetComponent<ParticleSystem>();
+            GetPlayerPlaneData((PlaneScriptableObject planeData) =>
+            {
+                if (planeData != null && PlayerController.IsLocalPlayer)
+                {
+
+                    if (PlayerController.m_team == 1)
+                    {
+                        playerPlaneObject = planeData.planeModel_green;
+                    }
+                    else
+                    {
+                        playerPlaneObject = planeData.planeModel_red;
+                    }
+                }
+                else
+                {
+                    playerPlaneObject = (GameObject)Resources.Load("Prefabs/Game/" + teamBomberPath);
+                }
+
+                Transform graphicPivot = transform.FindDeepChild("PlaneGraphic");
+                GameObject graphic = (GameObject)Instantiate(playerPlaneObject, graphicPivot.position, graphicPivot.rotation);
+                graphic.transform.parent = graphicPivot;
+                graphic.transform.localPosition = Vector3.zero;
+                graphic.transform.localRotation = Quaternion.identity;
+
+                m_bulletSpawnPoint = graphic.transform.FindDeepChild("BulletSpawn");
+                m_leftContrail = graphic.transform.FindDeepChild("LeftSmokeTrail").GetComponent<ParticleSystem>();
+                m_rightContrail = graphic.transform.FindDeepChild("RightSmokeTrail").GetComponent<ParticleSystem>();
+                
+            });
+
+            
 
             m_gunCharge = transform.FindDeepChild("GunCharge").gameObject;
             m_gunCharge.GetComponent<Animator>().speed = 1 / GConfigManager.GetFloatValue("MultishotDelay");
@@ -150,6 +183,30 @@ namespace BrainCloudUNETExample.Game
             }
 
             base.Start();
+        }
+
+        public void GetPlayerPlaneData(Action<PlaneScriptableObject> OnSuccess)
+        {
+            int userPlaneID = 0;
+
+            GCore.Wrapper.EntityService.GetSingleton("PlaneSkin", (string responseData, object cbObject) =>
+            {
+                JsonData jsonData = JsonMapper.ToObject(responseData);
+                JsonData entry = jsonData["data"]["data"];
+                userPlaneID = int.Parse(entry[GBomberRTTConfigManager.PLANE_SKIN_ID].ToString());
+
+                DirectoryInfo dir = new DirectoryInfo("Assets/Resources/PlaneData");
+                FileInfo[] files = dir.GetFiles("*.asset");
+
+                foreach (FileInfo f in files)
+                {
+                    PlaneScriptableObject planeDataEntry = Resources.Load<PlaneScriptableObject>(Path.Combine("PlaneData", Path.GetFileNameWithoutExtension(f.Name)));
+                    if (planeDataEntry.planeID == userPlaneID)
+                    {
+                        OnSuccess?.Invoke(planeDataEntry);
+                    }
+                }
+            });
         }
 
         public void ResetGunCharge()

@@ -522,6 +522,11 @@ namespace BrainCloudUNETExample
             GStateManager.Instance.PushSubState(StoreSubState.STATE_NAME);
         }
 
+        public void OpenHangar()
+        {
+            GStateManager.Instance.PushSubState(HangarSubState.STATE_NAME);
+        }
+
         public void OpenFriends()
         {
             GStateManager.Instance.PushSubState(FriendsSubState.STATE_NAME);
