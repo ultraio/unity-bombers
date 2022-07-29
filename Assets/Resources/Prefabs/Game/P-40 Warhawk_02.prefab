@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1016164872173305448}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: P-40 Warhawk_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46,7 +46,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1016164872173357750}
   - component: {fileID: 1016164872180440314}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -185,7 +185,7 @@ GameObject:
   - component: {fileID: 1016164872173329778}
   - component: {fileID: 1016164872158091984}
   - component: {fileID: 1016164872158173934}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: LeftSmokeTrail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4929,7 +4929,7 @@ GameObject:
   - component: {fileID: 1016164872173285270}
   - component: {fileID: 1016164872158093746}
   - component: {fileID: 1016164872157210718}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: RightSmokeTrail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9671,7 +9671,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1016164872173349102}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BulletSpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9701,7 +9701,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7918808332182896090}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BulletSpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9818,6 +9818,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: p40
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 52b7dd0ce731ee0418ca23b31589373a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8164078558771037576, guid: 52b7dd0ce731ee0418ca23b31589373a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 52b7dd0ce731ee0418ca23b31589373a, type: 3}
