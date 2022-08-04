@@ -11,6 +11,7 @@ using System.Linq;
 using UnityEngine.UI;
 using BrainCloudUNETExample.Connection;
 using Gameframework;
+using BrainCloud.LitJson;
 
 namespace BrainCloudUNETExample.Game
 {
@@ -1030,6 +1031,7 @@ namespace BrainCloudUNETExample.Game
                 botDict["profileId"] = SERVER_BOT + i;
                 botDict["name"] = botDict["profileId"];
                 botDict["netId"] = System.Convert.ToInt16(i + 8);
+                botDict["planeSkin"] = 0;
 
                 newMember = new LobbyMemberInfo(botDict);
                 BombersNetworkManager.LobbyInfo.Members.Add(newMember);

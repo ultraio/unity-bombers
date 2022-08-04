@@ -74,7 +74,20 @@ namespace BrainCloudUNETExample
             Dictionary<string, object> playerExtra = new Dictionary<string, object>();
             playerExtra.Add("cxId", GCore.Wrapper.Client.RTTConnectionID);
             playerExtra.Add(GBomberRTTConfigManager.JSON_GOLD_WINGS, GPlayerMgr.Instance.GetCurrencyBalance(GBomberRTTConfigManager.CURRENCY_GOLD_WINGS) > 0 ? true : false);
-            GCore.Wrapper.LobbyService.CreateLobbyWithPingData(m_lastSelectedRegionType, 76, false, playerExtra, "", s_matchOptions, in_otherCxIds);
+
+            int userPlaneID = 0;
+            GCore.Wrapper.EntityService.GetSingleton("PlaneSkin", (string responseData, object cbObject) =>
+            {
+                BrainCloud.LitJson.JsonData jsonData = BrainCloud.LitJson.JsonMapper.ToObject(responseData);
+                BrainCloud.LitJson.JsonData entry = jsonData["data"];
+
+                if (entry != null)
+                    userPlaneID = int.Parse(entry["data"][GBomberRTTConfigManager.PLANE_SKIN_ID].ToString());
+
+                playerExtra.Add(GBomberRTTConfigManager.PLANE_SKIN_ID, userPlaneID);
+
+                GCore.Wrapper.LobbyService.CreateLobbyWithPingData(m_lastSelectedRegionType, 76, false, playerExtra, "", s_matchOptions, in_otherCxIds);
+            });
         }
 
         public void FindLobby(Dictionary<string, object> in_matchOptions, string[] in_otherCxIds = null)
@@ -96,10 +109,9 @@ namespace BrainCloudUNETExample
         private void onPingRegionsSuccessFindOrCreate(string in_str, object obj)
         {
             string[] in_otherCxIds = (string[])obj;
-            Dictionary<string, object> playerExtra = new Dictionary<string, object>();
-            playerExtra.Add("cxId", GCore.Wrapper.Client.RTTConnectionID);
-            playerExtra.Add(GBomberRTTConfigManager.JSON_GOLD_WINGS, GPlayerMgr.Instance.GetCurrencyBalance(GBomberRTTConfigManager.CURRENCY_GOLD_WINGS) > 0 ? true : false);
             
+
+
             Dictionary<string, object> algo = new Dictionary<string, object>();
 
             float[] arry = { 10.0f, 20.5f, 80.0f };
@@ -136,7 +148,7 @@ namespace BrainCloudUNETExample
                compoundedRangeData.Add(newData);
            }
            algo[OperationParam.CompoundRanges.Value] = compoundedRangeData.ToArray();
-           
+
             /*
                    // ranged percent strategy
                    algo[OperationParam.LobbyStrategy.Value] = OperationParam.StrategyRangedPercent.Value;
@@ -149,7 +161,25 @@ namespace BrainCloudUNETExample
                     algo[OperationParam.LobbyAlignment.Value] = OperationParam.AlignmentCenter.Value;
                     algo[OperationParam.LobbyRanges.Value] = arry;
                     */
-            GCore.Wrapper.LobbyService.FindOrCreateLobbyWithPingData(m_lastSelectedRegionType, 76, 2, algo, s_matchOptions, 1, false, playerExtra, "", s_matchOptions, in_otherCxIds);
+
+            Dictionary<string, object> playerExtra = new Dictionary<string, object>();
+            playerExtra.Add("cxId", GCore.Wrapper.Client.RTTConnectionID);
+            playerExtra.Add(GBomberRTTConfigManager.JSON_GOLD_WINGS, GPlayerMgr.Instance.GetCurrencyBalance(GBomberRTTConfigManager.CURRENCY_GOLD_WINGS) > 0 ? true : false);
+
+            int userPlaneID = 0;
+
+            GCore.Wrapper.EntityService.GetSingleton("PlaneSkin", (string responseData, object cbObject) =>
+            {
+                BrainCloud.LitJson.JsonData jsonData = BrainCloud.LitJson.JsonMapper.ToObject(responseData);
+                BrainCloud.LitJson.JsonData entry = jsonData["data"];
+
+                if (entry != null)
+                    userPlaneID = int.Parse(entry["data"][GBomberRTTConfigManager.PLANE_SKIN_ID].ToString());
+
+                playerExtra.Add(GBomberRTTConfigManager.PLANE_SKIN_ID, userPlaneID);
+
+                GCore.Wrapper.LobbyService.FindOrCreateLobbyWithPingData(m_lastSelectedRegionType, 76, 2, algo, s_matchOptions, 1, false, playerExtra, "", s_matchOptions, in_otherCxIds);
+            });
         }
 
         private string m_lastSelectedRegionType = "4v4_can";
@@ -720,7 +750,8 @@ namespace BrainCloudUNETExample
                                     botDict["pic"] = "";
                                     botDict["cxId"] = "";
                                     botDict["rating"] = 0;
-                                    botDict["isReady"] = true;
+                                    botDict["isReady"] = true; 
+                                    botDict["planeSkinID"] = 0;
 
                                     LobbyMemberInfo newMember = null;
                                     botDict["team"] = memberInfo.Team;

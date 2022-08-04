@@ -73,9 +73,14 @@ namespace BrainCloudUNETExample
         private void OnPlaneIDSuccessCallback(string responseData, object cbObject)
         {
             JsonData jsonData = JsonMapper.ToObject(responseData);
-            JsonData entry = jsonData["data"]["data"];
-            latestVersion = int.Parse(jsonData["data"]["version"].ToString());
-            int planeID = int.Parse(entry[GBomberRTTConfigManager.PLANE_SKIN_ID].ToString());
+            JsonData entry = jsonData["data"];
+
+            int planeID = 0;
+            if(entry != null)
+            {
+                latestVersion = int.Parse(jsonData["data"]["version"].ToString());
+                planeID = int.Parse(entry["data"][GBomberRTTConfigManager.PLANE_SKIN_ID].ToString());
+            }
             
             foreach (Transform t in content)
             {
@@ -98,7 +103,13 @@ namespace BrainCloudUNETExample
 
             JsonData jsonData = JsonMapper.ToJson(stats);
 
-            GCore.Wrapper.EntityService.UpdateSingleton("PlaneSkin", jsonData.ToString(), "", latestVersion, OnSetPlaneIDSuccess, OnPlaneIDFailureCallback);
+            Dictionary<string, object> aclData = new Dictionary<string, object>
+            {
+                {"other", 1 }
+            };
+            JsonData aclJson = JsonMapper.ToJson(aclData);
+
+            GCore.Wrapper.EntityService.UpdateSingleton("PlaneSkin", jsonData.ToString(), aclJson.ToString(), latestVersion, OnSetPlaneIDSuccess, OnPlaneIDFailureCallback);
         }
 
         private void OnSetPlaneIDSuccess(string responseData, object cbObject)
