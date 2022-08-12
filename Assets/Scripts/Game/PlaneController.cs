@@ -127,6 +127,8 @@ namespace BrainCloudUNETExample.Game
             SmartsComponent.SetActive(true);
             SmartsComponent.layer = PlayerController.m_team == 1 ? 21 : 22; // debug collisions
 
+            //Get plane gameobject based on the players PlaneSkinID value
+
             GameObject playerPlaneObject = (GameObject)Resources.Load("Prefabs/Game/" + teamBomberPath);
 
             foreach (PlaneScriptableObject planeData in Resources.LoadAll("PlaneData", typeof(PlaneScriptableObject)))
