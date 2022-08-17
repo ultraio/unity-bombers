@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a22577f5df4a0d647921f838b7c315f6, type: 3}
+  m_Name: UltraViolet
+  m_EditorClassIdentifier: 
+  planeID: 3
+  planeModel_green: {fileID: 106598, guid: 86c5ec037548348d5a606eaea8c74c1a, type: 3}
+  planeModel_red: {fileID: 105944, guid: 0b816f7597a994c1bbf4b19a96fa60cc, type: 3}
+  planeName: Ultraviolet Wing Tips
+  planeDescription: Choose this ultra-rare plane at the edge of the spectrum!
+  planeThumbnail_green: {fileID: 21300000, guid: 3a24d8346797644f09f11dcbc5ffabfd,
+    type: 3}
+  planeThumbnail_red: {fileID: 21300000, guid: 2e965543d643f41fba213edfa4148eeb, type: 3}

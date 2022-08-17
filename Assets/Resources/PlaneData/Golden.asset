@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a22577f5df4a0d647921f838b7c315f6, type: 3}
+  m_Name: Golden
+  m_EditorClassIdentifier: 
+  planeID: 2
+  planeModel_green: {fileID: 106598, guid: d00a62f6ad76143b7b557c1ecfbcf730, type: 3}
+  planeModel_red: {fileID: 105944, guid: 73ab9a10a001641998526b358ffad9e9, type: 3}
+  planeName: Golden Wing Tips
+  planeDescription: Deliver your payload in style with gold-tipped wings!
+  planeThumbnail_green: {fileID: 21300000, guid: 333eed9508b1f4ff1abc9cf09994a169,
+    type: 3}
+  planeThumbnail_red: {fileID: 21300000, guid: ce8bbc82ef02a4baca2d7cba8ee21b7b, type: 3}
