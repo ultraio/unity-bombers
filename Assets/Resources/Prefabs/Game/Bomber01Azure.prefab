@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3300036}
   - component: {fileID: 2349552}
   m_Layer: 8
-  m_Name: Bomber01Golden
+  m_Name: Bomber01Azure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e667c9f8ade472d4c93020a3c70a0ca4, type: 2}
+  - {fileID: 2100000, guid: 7349b9d699c2842f3b28642071153563, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
