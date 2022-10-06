@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a22577f5df4a0d647921f838b7c315f6, type: 3}
   m_Name: 00_Default
   m_EditorClassIdentifier: 
-  planeID: default
+  planeID: 0
   planeModel_green: {fileID: 106598, guid: 13491f89b6bb5654d80a55c847840bda, type: 3}
   planeModel_red: {fileID: 105944, guid: c308ea3dd4e3a044cba36f90529fa65a, type: 3}
-  planeName: Bomber Default
-  planeThumbnail_green: {fileID: 21300000, guid: e0e7c19c93ecb134fba481971b06156b,
+  planeName: Standard Bomber
+  planeDescription: Every pilot has to start somewhere. A dependable plane.
+  planeThumbnail_green: {fileID: 21300000, guid: 97778378880604eac810e18a5abe0e07,
     type: 3}
-  planeThumbnail_red: {fileID: 21300000, guid: fce7217d25d09b94abd10485fde3a15a, type: 3}
+  planeThumbnail_red: {fileID: 21300000, guid: 3dd8c4f9556b745318ee1bf438109fd9, type: 3}
