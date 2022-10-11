@@ -47,17 +47,17 @@ Thumbs.db
 *RelayTestApp/Logs
 Bombers/Assets/ImportedAssets/Textures/CloudsAtlas.tif
 Bombers/Assets/ImportedAssets/Textures/CloudsAtlas.tif.meta
-BrainCloudSettings.asset
+BrainCloudSettings*
 BrainCloudSettings.asset.meta
+BrainCloudEditorSettings*.asset*
 #PhotonServerSettings.asset
-*.asset
-*.asset.meta
+EditorUserSettings.asset
+VersionControlSettings.asset
 *.idea
 *.log
 
 /Logs/*
 */.idea/*
 */.vs/*
-*/Assets/BrainCloud/Resources/*
 
 AssetStoreTools/*

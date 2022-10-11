@@ -1,6 +1,7 @@
 ﻿using BrainCloud;
 using BrainCloud.Common;
 using BrainCloud.JsonFx.Json;
+using BrainCloudUNETExample;
 using System;
 using System.Collections.Generic;
 
@@ -294,6 +295,9 @@ namespace Gameframework
                 ExtraData = new Dictionary<string, object>();
             }
 
+            if (ExtraData.ContainsKey(GBomberRTTConfigManager.PLANE_SKIN_ID)) 
+                PlaneSkinID = (int)ExtraData[GBomberRTTConfigManager.PLANE_SKIN_ID];
+
             if (in_dict.ContainsKey("cxId")) CXId = (string)in_dict["cxId"];
             else if (ExtraData.ContainsKey("cxId")) CXId = (string)ExtraData["cxId"];
 
@@ -310,6 +314,7 @@ namespace Gameframework
         public string Name;
         public string PictureURL;
         public string Team;
+        public int PlaneSkinID;
 
         public string CXId;
 

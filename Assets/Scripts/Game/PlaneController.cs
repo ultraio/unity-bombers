@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using Gameframework;
+using System;
+using BrainCloud.LitJson;
+using System.IO;
 
 namespace BrainCloudUNETExample.Game
 {
@@ -101,8 +104,11 @@ namespace BrainCloudUNETExample.Game
 
             string teamBomberPath = "";
             bool bHasGoldWings = false;
+
+            /*
             if (PlayerController.MemberInfo.ExtraData.ContainsKey(GBomberRTTConfigManager.JSON_GOLD_WINGS))
                 bHasGoldWings = (bool)PlayerController.MemberInfo.ExtraData[GBomberRTTConfigManager.JSON_GOLD_WINGS];
+            */
 
             if (PlayerController.m_team == 1)
             {
@@ -121,8 +127,29 @@ namespace BrainCloudUNETExample.Game
             SmartsComponent.SetActive(true);
             SmartsComponent.layer = PlayerController.m_team == 1 ? 21 : 22; // debug collisions
 
+            //Get plane gameobject based on the players PlaneSkinID value
+
+            GameObject playerPlaneObject = (GameObject)Resources.Load("Prefabs/Game/" + teamBomberPath);
+
+            foreach (PlaneScriptableObject planeData in Resources.LoadAll("PlaneData", typeof(PlaneScriptableObject)))
+            {
+                if (planeData.planeID == PlayerController.MemberInfo.PlaneSkinID)
+                {
+                    if (PlayerController.m_team == 1)
+                    {
+                        playerPlaneObject = planeData.planeModel_green;
+                    }
+                    else
+                    {
+                        playerPlaneObject = planeData.planeModel_red;
+                    }
+
+                    break;
+                }
+            }
+
             Transform graphicPivot = transform.FindDeepChild("PlaneGraphic");
-            GameObject graphic = (GameObject)Instantiate((GameObject)Resources.Load("Prefabs/Game/" + teamBomberPath), graphicPivot.position, graphicPivot.rotation);
+            GameObject graphic = (GameObject)Instantiate(playerPlaneObject, graphicPivot.position, graphicPivot.rotation);
             graphic.transform.parent = graphicPivot;
             graphic.transform.localPosition = Vector3.zero;
             graphic.transform.localRotation = Quaternion.identity;

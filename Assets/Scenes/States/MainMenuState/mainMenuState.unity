@@ -3984,7 +3984,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1466799068}
   m_HandleRect: {fileID: 1466799067}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -6108,7 +6108,6 @@ ParticleSystemRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 652584ff7c4273b43af17b4d5a51b259, type: 2}
-  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -11792,7 +11791,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 345904348217012154, guid: 240274275c9e74767a0ccbc102cc1cf7,
         type: 3}
-      propertyPath: m_SizeDelta.x
+      propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 345904348217012154, guid: 240274275c9e74767a0ccbc102cc1cf7,
@@ -11830,14 +11829,13 @@ PrefabInstance:
     - target: {fileID: 452292849422199812, guid: 240274275c9e74767a0ccbc102cc1cf7,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OpenStore
+      value: OpenHangar
       objectReference: {fileID: 0}
-    - target: {fileID: 453687130597390384, guid: 240274275c9e74767a0ccbc102cc1cf7,
+    - target: {fileID: 452292849422199812, guid: 240274275c9e74767a0ccbc102cc1cf7,
         type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300122, guid: 6faaf7b8a5ae1da4fa07b6dc4ed00b55,
-        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: BrainCloudUNETExample.MainMenuState, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 564855479853627742, guid: 240274275c9e74767a0ccbc102cc1cf7,
         type: 3}
       propertyPath: m_IsActive

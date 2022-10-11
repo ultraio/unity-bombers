@@ -1,4 +1,5 @@
-﻿using Gameframework;
+﻿using BrainCloud.LitJson;
+using Gameframework;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -86,10 +87,22 @@ namespace BrainCloudUNETExample
             playerExtra.Add("cxId", GCore.Wrapper.Client.RTTConnectionID);
             playerExtra.Add(GBomberRTTConfigManager.JSON_GOLD_WINGS, GPlayerMgr.Instance.GetCurrencyBalance(GBomberRTTConfigManager.CURRENCY_GOLD_WINGS) > 0 ? true : false);
 
-            GCore.Wrapper.LobbyService.JoinLobby(m_data.Presence.LobbyId, true, playerExtra, "");
+            int userPlaneID = 0;
+            GCore.Wrapper.EntityService.GetSingleton("PlaneSkin", (string responseData, object cbObject) =>
+            {
+                JsonData jsonData = JsonMapper.ToObject(responseData);
+                JsonData entry = jsonData["data"];
 
-            GStateManager.Instance.PushSubState(JoiningGameSubState.STATE_NAME);
-            GCore.Wrapper.RTTService.RegisterRTTLobbyCallback(BombersNetworkManager.Instance.LobbyCallback);
+                if (entry != null)
+                    userPlaneID = int.Parse(entry["data"][GBomberRTTConfigManager.PLANE_SKIN_ID].ToString());
+
+                playerExtra.Add(GBomberRTTConfigManager.PLANE_SKIN_ID, userPlaneID);
+
+                GCore.Wrapper.LobbyService.JoinLobby(m_data.Presence.LobbyId, true, playerExtra, "");
+
+                GStateManager.Instance.PushSubState(JoiningGameSubState.STATE_NAME);
+                GCore.Wrapper.RTTService.RegisterRTTLobbyCallback(BombersNetworkManager.Instance.LobbyCallback);
+            });
         }
 
         private void updateLobbyInviteDisplay()
