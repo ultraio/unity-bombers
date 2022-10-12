@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using System.IO;
 
 namespace Gameframework
 {
@@ -27,6 +29,20 @@ namespace Gameframework
 
         void Update()
         {
+#if UNITY_EDITOR
+            //Simple solution to take screenshots of the game, saves to Assets/Screenshots/filename
+
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                //take screenshot
+                string fileName = DateTime.Now.ToString("HHmmss") + ".png";
+                string fullPath = Path.Combine("Assets/Screenshots", fileName);
+                ScreenCapture.CaptureScreenshot(fullPath);
+
+                Debug.Log("Generated screenshot at " + fullPath);
+            }
+#endif
+
             if (!m_bLoading && m_loadingScreen != null)
             {
                 // we aren't loading 
