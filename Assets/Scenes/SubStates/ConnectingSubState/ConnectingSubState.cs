@@ -3,6 +3,8 @@ using BrainCloud;
 using BrainCloud.Common;
 using UnityEngine;
 using UnityEngine.UI;
+
+
 namespace BrainCloudUNETExample
 {
     public class ConnectingSubState : BaseSubState
@@ -52,7 +54,7 @@ namespace BrainCloudUNETExample
         {
             _stateInfo = new StateInfo(STATE_NAME, this);
             base.Start();
-
+            /*
             if (GCore.IsFreshLaunch)
             {
                 GStateManager.Instance.EnableLoadingSpinner(true);
@@ -63,7 +65,47 @@ namespace BrainCloudUNETExample
                 GStateManager.Instance.EnableLoadingSpinner(false);
                 Panel.SetActive(true);
             }
-            updateViewDisplay();
+            */
+
+            //updateViewDisplay();
+
+            if (Ultraio.Ultra.Client.Initialized)
+            {
+                //client is logged in
+                Debug.Log("Ultra client logged in: " + Ultraio.Ultra.Client.Username);
+            }
+            else
+            {
+                //init ultra
+                UltraManager.singleton.OnUltraLoginSuccess += (string username, string token) =>
+                {
+                    SuccessCallback successCB = (response, cbObject) =>
+                    {
+                        //ultra cloud auth success
+                        Debug.Log("Attaching username: " + username);
+                        GCore.Wrapper.IdentityService.AttachUltraIdentity(username, token, onAttachSuccess, onAuthFail);
+                        GPlayerMgr.Instance.OnAuthSuccess(response, cbObject);
+                        onConnectComplete();
+                    };
+                    FailureCallback failureCB = (status, code, error, cbObject) =>
+                    {
+                        //failure
+                        Debug.Log(string.Format("ultraCloud login failed | {0} {1} {2}", status, code, error));
+                    };
+
+                    GCore.Wrapper.Init();
+                    GCore.Wrapper.AuthenticateUltra(username, token, true, successCB, failureCB);
+
+                };
+                UltraManager.singleton.OnUltraLoginFailure += (string error) =>
+                {
+                    Debug.Log("Ultra login failed: " + error);
+                };
+
+                UltraManager.singleton.Init();
+                GStateManager.Instance.EnableLoadingSpinner(true);
+
+            }
         }
         override public void ExitSubState()
         {
@@ -165,11 +207,11 @@ namespace BrainCloudUNETExample
 
         private void onAttachSuccess(string jsonResponse, object cbObject)
         {
-            GPlayerMgr.Instance.PlayerData.PlayerName = UsernameBox.text;
-            if (m_lastAuthType == AuthenticationType.Universal)
+            GPlayerMgr.Instance.PlayerData.PlayerName = Ultraio.Ultra.Client.Username;
+            if (m_lastAuthType == AuthenticationType.Ultra)
             {
-                GPlayerMgr.Instance.PlayerData.UniversalId = UsernameBox.text;
-                GCore.Wrapper.Client.PlayerStateService.UpdateUserName(UsernameBox.text);
+                GPlayerMgr.Instance.PlayerData.UniversalId = Ultraio.Ultra.Client.Username;
+                GCore.Wrapper.Client.PlayerStateService.UpdateUserName(Ultraio.Ultra.Client.Username);
             }
             GCore.Instance.ProcessRetryQueue();
             onCompleteConnectingSubState();
