@@ -118,23 +118,23 @@ namespace BrainCloudUNETExample
 
             float[] arry4 = { 250, 400.0f };
 
-            algo[OperationParam.LobbyStrategy.Value] = OperationParam.StrategyCompound.Value;
+            algo[Constants.LobbyStrategy] = Constants.StrategyCompound;
 
            // make algos
            List<Dictionary<string, string>> algos = new List<Dictionary<string, string>>();
            Dictionary<string, string> pingAlgo = new Dictionary<string, string>();
            Dictionary<string, string> ratingAlgo = new Dictionary<string, string>();
-           pingAlgo[OperationParam.LobbyStrategy.Value] = OperationParam.StrategyAbsolute.Value;
-           pingAlgo[OperationParam.LobbyAlignment.Value] = OperationParam.StrategyAbsolute.Value;
-           pingAlgo[OperationParam.UserItemsServiceCriteria.Value] = OperationParam.CriteraPing.Value;
+           pingAlgo[Constants.LobbyStrategy] = Constants.StrategyAbsolute;
+           pingAlgo[Constants.LobbyAlignment] = Constants.StrategyAbsolute;
+           pingAlgo[Constants.UserItemsServiceCriteria] = Constants.CriteraPing;
 
-           ratingAlgo[OperationParam.LobbyStrategy.Value] = OperationParam.StrategyRangedPercent.Value;
-           ratingAlgo[OperationParam.LobbyAlignment.Value] = OperationParam.AlignmentCenter.Value;
-           ratingAlgo[OperationParam.UserItemsServiceCriteria.Value] = OperationParam.CriteraRating.Value;
+           ratingAlgo[Constants.LobbyStrategy] = Constants.StrategyRangedPercent;
+           ratingAlgo[Constants.LobbyAlignment] = Constants.AlignmentCenter;
+           ratingAlgo[Constants.UserItemsServiceCriteria] = Constants.CriteraRating;
 
             algos.Add(pingAlgo);
            algos.Add(ratingAlgo);
-           algo[OperationParam.CompoundAlgos.Value] = algos.ToArray();
+           algo[Constants.CompoundAlgos] = algos.ToArray();
 
            // create compound ranges
            Dictionary<int, float[]> compoundRange = new Dictionary<int, float[]>();
@@ -145,7 +145,7 @@ namespace BrainCloudUNETExample
                object[] newData = { item.Key, item.Value };
                compoundedRangeData.Add(newData);
            }
-           algo[OperationParam.CompoundRanges.Value] = compoundedRangeData.ToArray();
+           algo[Constants.CompoundRanges] = compoundedRangeData.ToArray();
 
             /*
                    // ranged percent strategy

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a22577f5df4a0d647921f838b7c315f6, type: 3}
   m_Name: 01_Azure
   m_EditorClassIdentifier: 
-  planeID: 1
+  planeID: 22
   planeModel_green: {fileID: 106598, guid: 3cb7195efa21045fa93ddce7e45905b7, type: 3}
   planeModel_red: {fileID: 105944, guid: 5eb173ed369164fbf8cc4adf6d46d217, type: 3}
   planeName: Azure Wings Tips

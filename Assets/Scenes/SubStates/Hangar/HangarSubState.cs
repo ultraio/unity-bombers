@@ -4,6 +4,7 @@ using Gameframework;
 
 using System.IO;
 using BrainCloud.LitJson;
+using BrainCloud;
 
 namespace BrainCloudUNETExample
 {
@@ -25,33 +26,60 @@ namespace BrainCloudUNETExample
             // get placeholder items for now
             List<PlaneScriptableObject> planeData = new List<PlaneScriptableObject>();
 
-            
-
-            foreach(PlaneScriptableObject planeDataEntry in Resources.LoadAll("PlaneData", typeof(PlaneScriptableObject)))
+            SuccessCallback successCB = (response, cbObject) =>
             {
-                //PlaneScriptableObject planeDataEntry = Resources.Load<PlaneScriptableObject>(Path.Combine("PlaneData", Path.GetFileNameWithoutExtension(f.Name)));
-                planeData.Add(planeDataEntry);
-            }
+                Debug.Log("Got blockchain items: " + response);
+                JsonData jsonData = JsonMapper.ToObject(response);
+                JsonData items = jsonData["data"]["response"]["items"];
 
-            UpdateData();
+                HashSet<int> itemFactoryIds = new HashSet<int>();
+                //add the default plane skin id of 0
+                itemFactoryIds.Add(0);
 
-            //clear list
-            content = this.transform.FindDeepChild("Content");
-            for (int i = 0; i < content.childCount; ++i)
+                //loop all found NFTs
+                for (int i = 0; i < items.Count; i++)
+                {
+                    int factoryID = int.Parse(items[i]["json"]["token_factory_id"].ToString());
+                    //Find matching plane skin data
+                    itemFactoryIds.Add(factoryID);
+                }
+                //populate local plane skin data based on found factory IDs
+                foreach (PlaneScriptableObject planeDataEntry in Resources.LoadAll("PlaneData", typeof(PlaneScriptableObject)))
+                {
+                    //PlaneScriptableObject planeDataEntry = Resources.Load<PlaneScriptableObject>(Path.Combine("PlaneData", Path.GetFileNameWithoutExtension(f.Name)));
+                    if(itemFactoryIds.Contains(planeDataEntry.planeID))
+                        planeData.Add(planeDataEntry);
+                }
+                //Get the users selected plane skin ID
+                UpdateData();
+
+                //clear list
+                content = this.transform.FindDeepChild("Content");
+                for (int i = 0; i < content.childCount; ++i)
+                {
+                    Destroy(content.GetChild(i).gameObject);
+                }
+
+                //Add and initialize the plane skin UI cards
+                GameObject cardGO;
+                HangarPlaneCard card;
+                
+                for (int i = 0; i < planeData.Count; ++i)
+                {
+                    cardGO = GEntityFactory.Instance.CreateResourceAtPath("Prefabs/UI/HangarPlaneCard", content);
+                    card = cardGO.GetComponent<HangarPlaneCard>();
+                    card.LateInit(planeData[i]);
+                    card.OnActivateClickedAction += OnSetPlaneID;
+                }
+            };
+
+            FailureCallback failureCB = (status, code, error, cbObject) =>
             {
-                Destroy(content.GetChild(i).gameObject);
-            }
+                Debug.Log(string.Format("blockchain items failed to load | {0} {1} {2}", status, code, error));
 
-            GameObject cardGO;
-            HangarPlaneCard card;
+            };
 
-            for (int i = 0; i < planeData.Count; ++i)
-            {
-                cardGO = GEntityFactory.Instance.CreateResourceAtPath("Prefabs/UI/HangarPlaneCard", content);
-                card = cardGO.GetComponent<HangarPlaneCard>();
-                card.LateInit(planeData[i]);
-                card.OnActivateClickedAction += OnSetPlaneID;
-            }
+            GCore.Wrapper.Client.Blockchain.GetBlockchainItems("default", "{}",successCB, failureCB);
         }
 
         protected override void OnDestroy()
