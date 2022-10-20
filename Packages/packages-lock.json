@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.ultra.authentication": {
-      "version": "file:C:/Users/nicol/Downloads/Ultra Auth Plugin/Ultra Auth Plugin",
+      "version": "file:../Ultra Auth Plugin/Ultra Auth Plugin",
       "depth": 0,
       "source": "local",
       "dependencies": {

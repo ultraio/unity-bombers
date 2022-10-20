@@ -25,8 +25,6 @@ public class UltraManager : SingletonBehaviour<UltraManager>
 
     void OnInitSuccess(string username, string idToken)
     {
-        Debug.Log($"{username} is now playing!");
-        //Authenticate with brainCloud
         OnUltraLoginSuccess?.Invoke(username, idToken);
     }
 

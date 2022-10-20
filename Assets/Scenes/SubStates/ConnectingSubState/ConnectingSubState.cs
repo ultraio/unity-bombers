@@ -54,27 +54,8 @@ namespace BrainCloudUNETExample
         {
             _stateInfo = new StateInfo(STATE_NAME, this);
             base.Start();
-            /*
-            if (GCore.IsFreshLaunch)
-            {
-                GStateManager.Instance.EnableLoadingSpinner(true);
-                authenticateBraincloud();
-            }
-            else
-            {
-                GStateManager.Instance.EnableLoadingSpinner(false);
-                Panel.SetActive(true);
-            }
-            */
 
-            //updateViewDisplay();
-
-            if (Ultraio.Ultra.Client.Initialized)
-            {
-                //client is logged in
-                Debug.Log("Ultra client logged in: " + Ultraio.Ultra.Client.Username);
-            }
-            else
+            if (!Ultraio.Ultra.Client.Initialized)
             {
                 //init ultra
                 UltraManager.singleton.OnUltraLoginSuccess += (string username, string token) =>
@@ -104,7 +85,6 @@ namespace BrainCloudUNETExample
 
                 UltraManager.singleton.Init();
                 GStateManager.Instance.EnableLoadingSpinner(true);
-
             }
         }
         override public void ExitSubState()
