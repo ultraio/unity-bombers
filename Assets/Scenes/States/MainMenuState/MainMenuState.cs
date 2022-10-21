@@ -7,6 +7,7 @@ using BrainCloud;
 using BrainCloudUNETExample.Connection;
 using BrainCloud.JsonFx.Json;
 using Gameframework;
+using TMPro;
 
 namespace BrainCloudUNETExample
 {
@@ -65,6 +66,10 @@ namespace BrainCloudUNETExample
         [SerializeField]
         private Button StoreButton = null;
         [SerializeField]
+        private GameObject StoreBadge = null;
+        [SerializeField]
+        private TextMeshProUGUI StoreBadgeText = null;
+        [SerializeField]
         private Button OptionsButton = null;
         [SerializeField]
         private Button FriendsButton = null;
@@ -116,6 +121,8 @@ namespace BrainCloudUNETExample
                 GStateManager.Instance.PushSubState(ConnectingSubState.STATE_NAME);
             }
 
+            StoreBadge.SetActive(false);
+
 #if STEAMWORKS_ENABLED
             QuitButton.SetActive(true);
             StoreButtonTop.SetActive(false);
@@ -154,6 +161,7 @@ namespace BrainCloudUNETExample
                 GEventManager.StopListening(GEventManager.ON_RTT_ENABLED, OnEnableRTTSuccess);
                 GEventManager.StopListening(GEventManager.ON_PLAYER_DATA_UPDATED, OnUpdateStats);
                 (BombersNetworkManager.singleton as BombersNetworkManager).DisconnectGlobalChat();
+                GCore.Wrapper.RTTService.DeregisterRTTBlockchainRefresh();
             }
             ChatInputField.onEndEdit.RemoveListener(delegate { OnEndEditHelper(); });
 
@@ -164,6 +172,7 @@ namespace BrainCloudUNETExample
         private void OnEnableRTTSuccess()
         {
             GCore.Wrapper.RTTService.RegisterRTTPresenceCallback(OnPresenceCallback);
+            GCore.Wrapper.RTTService.RegisterRTTBlockchainRefresh(OnBlockchainRefresh);
             GCore.Wrapper.Client.PresenceService.RegisterListenersForFriends(platform, true, presenceSuccess);
             OnUpdateStats();
         }
@@ -524,6 +533,7 @@ namespace BrainCloudUNETExample
 
         public void OpenHangar()
         {
+            StoreBadge.SetActive(false);
             GStateManager.Instance.PushSubState(HangarSubState.STATE_NAME);
         }
 
@@ -744,6 +754,21 @@ namespace BrainCloudUNETExample
         private void OnRefreshFriendsList()
         {
             OnGetPresenceOfFriendsSuccess("", null);
+        }
+
+        private void OnBlockchainRefresh(string in_message)
+        {
+            Dictionary<string, object> jsonMessage = (Dictionary<string, object>)JsonReader.Deserialize(in_message);
+            switch (jsonMessage["operation"] as string)
+            {
+                case "BOMBER_AVAILABLE": // TODO: Get proper Json operation
+                    // TODO: Need to update notification badge; probably store count on player?
+                    StoreBadge.SetActive(true);
+                    return;
+                default:
+                    Debug.Log("(Blockchain Refresh received - NEED TO SHOW MESSAGE)");
+                    return;
+            }
         }
 
         private FriendsListItem CreateFriendsListItem(Transform in_parent = null)
