@@ -1,0 +1,3 @@
+[submodule "UltraAuthenticationPlugin"]
+	path = UltraAuthenticationPlugin
+	url = ..\\UltraAuthenticationPlugin
