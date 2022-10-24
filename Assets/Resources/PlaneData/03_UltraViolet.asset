@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a22577f5df4a0d647921f838b7c315f6, type: 3}
   m_Name: 03_UltraViolet
   m_EditorClassIdentifier: 
-  planeID: 3
+  planeID: 36
   planeModel_green: {fileID: 106598, guid: 86c5ec037548348d5a606eaea8c74c1a, type: 3}
   planeModel_red: {fileID: 105944, guid: 0b816f7597a994c1bbf4b19a96fa60cc, type: 3}
   planeName: Ultraviolet Wing Tips

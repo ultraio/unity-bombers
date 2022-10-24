@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a22577f5df4a0d647921f838b7c315f6, type: 3}
   m_Name: 02_Golden
   m_EditorClassIdentifier: 
-  planeID: 2
+  planeID: 35
   planeModel_green: {fileID: 106598, guid: d00a62f6ad76143b7b557c1ecfbcf730, type: 3}
   planeModel_red: {fileID: 105944, guid: 73ab9a10a001641998526b358ffad9e9, type: 3}
   planeName: Golden Wing Tips
