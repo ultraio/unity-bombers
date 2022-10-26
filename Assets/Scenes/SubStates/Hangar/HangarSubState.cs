@@ -46,7 +46,6 @@ namespace BrainCloudUNETExample
                 //populate local plane skin data based on found factory IDs
                 foreach (PlaneScriptableObject planeDataEntry in Resources.LoadAll("PlaneData", typeof(PlaneScriptableObject)))
                 {
-                    //PlaneScriptableObject planeDataEntry = Resources.Load<PlaneScriptableObject>(Path.Combine("PlaneData", Path.GetFileNameWithoutExtension(f.Name)));
                     if(itemFactoryIds.Contains(planeDataEntry.planeID))
                         planeData.Add(planeDataEntry);
                 }
@@ -75,8 +74,33 @@ namespace BrainCloudUNETExample
 
             FailureCallback failureCB = (status, code, error, cbObject) =>
             {
-                Debug.Log(string.Format("blockchain items failed to load | {0} {1} {2}", status, code, error));
+                HudHelper.DisplayMessageDialog("BLOCKCHAIN ERROR", string.Format("Blockchain items failed to load | {0} {1} {2}", status, code, error), "OK");
+                //Load default plane skin
+                foreach (PlaneScriptableObject planeDataEntry in Resources.LoadAll("PlaneData", typeof(PlaneScriptableObject)))
+                {
+                    if (planeDataEntry.planeID == 0)
+                    {
+                        planeData.Add(planeDataEntry);
+                        break;
+                    }
+                }
 
+                UpdateData();
+
+                //clear list
+                content = this.transform.FindDeepChild("Content");
+                for (int i = 0; i < content.childCount; ++i)
+                {
+                    Destroy(content.GetChild(i).gameObject);
+                }
+
+                //Add and initialize the plane skin UI cards
+                GameObject cardGO;
+                HangarPlaneCard card;
+                cardGO = GEntityFactory.Instance.CreateResourceAtPath("Prefabs/UI/HangarPlaneCard", content);
+                card = cardGO.GetComponent<HangarPlaneCard>();
+                card.LateInit(planeData[0]);
+                card.OnActivateClickedAction += OnSetPlaneID;
             };
 
             GCore.Wrapper.Client.Blockchain.GetBlockchainItems("default", "{}",successCB, failureCB);
@@ -86,9 +110,6 @@ namespace BrainCloudUNETExample
         {
             base.OnDestroy();
         }
-        #endregion
-
-        #region Public 
         #endregion
 
         #region Private
