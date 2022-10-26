@@ -84,7 +84,7 @@ namespace BrainCloudUNETExample
                     Debug.Log("Ultra login failed: " + error);
                     HudHelper.DisplayMessageDialog("AUTHENTICATION ERROR", "PLEASE MAKE SURE YOU HAVE ACCESS TO ULTRA ENDPOINTS", "TRY AGAIN", () =>
                     {
-                        UltraManager.singleton.Init();
+                        LaunchBrowserLogin();
                     });
                 };
 

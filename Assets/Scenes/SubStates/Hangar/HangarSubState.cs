@@ -78,6 +78,7 @@ namespace BrainCloudUNETExample
                 //Load default plane skin
                 foreach (PlaneScriptableObject planeDataEntry in Resources.LoadAll("PlaneData", typeof(PlaneScriptableObject)))
                 {
+                    //PlaneScriptableObject planeDataEntry = Resources.Load<PlaneScriptableObject>(Path.Combine("PlaneData", Path.GetFileNameWithoutExtension(f.Name)));
                     if (planeDataEntry.planeID == 0)
                     {
                         planeData.Add(planeDataEntry);
