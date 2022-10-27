@@ -40,7 +40,7 @@ namespace Gameframework
 
             GCore.Wrapper.RTTService.DeregisterRTTBlockchainRefresh();
         }
-        
+
         private void OnBlockchainRefresh(string in_message)
         {
             Dictionary<string, object> jsonMessage = (Dictionary<string, object>)JsonReader.Deserialize(in_message);

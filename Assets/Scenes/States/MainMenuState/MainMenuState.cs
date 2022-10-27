@@ -37,7 +37,7 @@ namespace BrainCloudUNETExample
         private GameObject LobbyChatCellSystem = null;
 
         [SerializeField]
-        private Text NoFriendsOnline = null;
+        private TextMeshProUGUI NoFriendsOnline = null;
 
         [SerializeField]
         private RectTransform FriendsScrollView = null;
@@ -78,7 +78,7 @@ namespace BrainCloudUNETExample
         private Image TextInputMaxIndicator = null;
 
         [SerializeField]
-        private InputField ChatInputField = null;
+        private TMP_InputField ChatInputField = null;
 
         #region BaseState
         protected override void Start()
@@ -268,7 +268,7 @@ namespace BrainCloudUNETExample
                 GlobalChatEntered();
         }
 
-        public void OnGlobalChatValueChanged(InputField in_field)
+        public void OnGlobalChatValueChanged(TMP_InputField in_field)
         {
             if (in_field.isFocused)
             {
@@ -306,7 +306,7 @@ namespace BrainCloudUNETExample
             }
         }
 
-        private IEnumerator delayedSelect(InputField in_field)
+        private IEnumerator delayedSelect(TMP_InputField in_field)
         {
             in_field.interactable = false;
             yield return YieldFactory.GetWaitForSeconds(0.15f);
@@ -635,16 +635,16 @@ namespace BrainCloudUNETExample
 
                 m_statsImage.fillAmount = Mathf.InverseLerp(xpData.PrevThreshold, xpData.NextThreshold, xpData.ExperiencePoints);
 
-                Text tempText = null;
+                TextMeshProUGUI tempText = null;
                 for (int i = 2; i < playerStats.Count; ++i)
                 {
-                    tempText = Instantiate(m_statText, m_statsPanelContentLeft.transform).GetComponent<Text>();
-                    tempText.alignment = TextAnchor.MiddleLeft;
+                    tempText = Instantiate(m_statText, m_statsPanelContentLeft.transform).GetComponent<TextMeshProUGUI>();
+                    tempText.alignment = TextAlignmentOptions.MidlineLeft;
                     tempText.text = "  " + playerStats[i].Name;
-                    tempText = Instantiate(m_statValue, m_statsPanelContentRight.transform).GetComponent<Text>();
+                    tempText = Instantiate(m_statValue, m_statsPanelContentRight.transform).GetComponent<TextMeshProUGUI>();
                     tempText.text = HudHelper.ToGUIString(playerStats[i].Value);
                 }
-                GameObject.Find("RankText").GetComponent<Text>().text = rank;
+                GameObject.Find("RankText").GetComponent<TextMeshProUGUI>().text = rank;
             }
         }
 
