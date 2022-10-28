@@ -90,9 +90,10 @@ ehthumbs.db
 Thumbs.db
 
 # Misc Files
-*.log
+*.log*
 */Logs/*
-*.idea
+*.idea*
 */.idea/*
+*.lighting*
 BrainCloudSettings*
 BrainCloudEditorSettings*

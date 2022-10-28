@@ -1,6 +1,7 @@
 ﻿using Gameframework;
 using BrainCloud;
 using BrainCloud.Common;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,16 +12,16 @@ namespace BrainCloudUNETExample
     {
         public static string STATE_NAME = "connectingSubState";
 
-        public InputField UsernameBox = null;
-        public InputField PasswordBox = null;
+        public TMP_InputField UsernameBox = null;
+        public TMP_InputField PasswordBox = null;
 
         public Sprite IconEmail = null;
         public Sprite IconPilot = null;
 
         public GameObject ButtonGroup = null;
         public GameObject ButtonGroupWithCancel = null;
-        public Text InstructionText = null;
-        public Text LoginButtonText = null;
+        public TextMeshProUGUI InstructionText = null;
+        public TextMeshProUGUI LoginButtonText = null;
 
         [SerializeField]
         private GameObject Panel = null;
@@ -364,15 +365,15 @@ namespace BrainCloudUNETExample
 
             if (m_defaultAuthType == AuthenticationType.Universal)
             {
-                UsernameBox.transform.Find("Placeholder").GetComponent<Text>().text = "Enter Username";
+                UsernameBox.transform.Find("Placeholder").GetComponent<TextMeshProUGUI>().text = "Enter Username";
                 UsernameBox.transform.Find("Icon").GetComponent<Image>().sprite = IconPilot;
-                UsernameBox.contentType = InputField.ContentType.Alphanumeric;
+                UsernameBox.contentType = TMP_InputField.ContentType.Alphanumeric;
             }
             else if (m_defaultAuthType == AuthenticationType.Email)
             {
-                UsernameBox.transform.Find("Placeholder").GetComponent<Text>().text = "Enter Email";
+                UsernameBox.transform.Find("Placeholder").GetComponent<TextMeshProUGUI>().text = "Enter Email";
                 UsernameBox.transform.Find("Icon").GetComponent<Image>().sprite = IconEmail;
-                UsernameBox.contentType = InputField.ContentType.EmailAddress;
+                UsernameBox.contentType = TMP_InputField.ContentType.EmailAddress;
             }
             // Add support for other Authentication types here
         }
