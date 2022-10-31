@@ -33,7 +33,7 @@ namespace BrainCloudUNETExample
             m_gameDurations = GameObject.Find("MapPresets").GetComponent<MapPresets>().GameDurations;
             m_regions = GameObject.Find("MapPresets").GetComponent<MapPresets>().Regions;
             m_textMesh = transform.FindDeepChild("TitleBarText").GetComponent<TextMeshProUGUI>();
-            m_inputField = transform.FindDeepChild("Room Name").GetComponent<InputField>();
+            m_inputField = transform.FindDeepChild("Room Name").GetComponent<TMP_InputField>();
             m_inputField.characterLimit = GPlayerMgr.MAX_CHARACTERS_GAME_NAME;
 
             // update the Max Players default and max values.
@@ -364,7 +364,7 @@ namespace BrainCloudUNETExample
         private int m_regionListSelection = 0;
 
         private bool m_inputWasFocused = false;
-        private InputField m_inputField = null;
+        private TMP_InputField m_inputField = null;
         private List<MapPresets.Preset> m_mapPresets;
         private List<MapPresets.MapSize> m_mapSizes;
         private List<MapPresets.GameDuration> m_gameDurations;

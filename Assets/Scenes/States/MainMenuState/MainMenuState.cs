@@ -103,7 +103,7 @@ namespace BrainCloudUNETExample
             BombersNetworkManager.Instance.ConnectRTT();
 
             GameObject playerName = GameObject.Find("PlayerName");
-            m_inputField = playerName.GetComponent<InputField>();
+            m_inputField = playerName.GetComponent<TMP_InputField>();
             m_inputField.characterLimit = MAX_CHARACTERS_NAME;
             m_inputField.text = GPlayerMgr.Instance.PlayerData.PlayerName;
             m_inputField.interactable = false;
@@ -872,7 +872,7 @@ namespace BrainCloudUNETExample
         }
 
         private string platform = "";   // denotes All
-        private InputField m_inputField = null;
+        private TMP_InputField m_inputField = null;
         private int MIN_CHARACTERS_NAME = 3;
         private int MAX_CHARACTERS_NAME = 16;
 
