@@ -259,6 +259,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6654926032966948725, guid: 7d1f08fbf9b7a1741a68a88f101c3878,
+        type: 3}
+      propertyPath: m_text
+      value: Fire Guns
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d1f08fbf9b7a1741a68a88f101c3878, type: 3}
 --- !u!1 &8202267414120733456 stripped
@@ -409,6 +414,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4169711211797345887, guid: 7789ae02368ce8b4ba33a8a6d774116a,
+        type: 3}
+      propertyPath: m_text
+      value: D
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7789ae02368ce8b4ba33a8a6d774116a, type: 3}
 --- !u!224 &8271492958302004312 stripped
@@ -547,6 +557,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6654926032966948725, guid: 7d1f08fbf9b7a1741a68a88f101c3878,
+        type: 3}
+      propertyPath: m_text
+      value: Bank Right
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d1f08fbf9b7a1741a68a88f101c3878, type: 3}
@@ -698,6 +713,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4169711211797345887, guid: 7789ae02368ce8b4ba33a8a6d774116a,
+        type: 3}
+      propertyPath: m_text
+      value: W
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7789ae02368ce8b4ba33a8a6d774116a, type: 3}
 --- !u!224 &8271492958158913380 stripped
@@ -836,6 +856,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6654926032966948725, guid: 7d1f08fbf9b7a1741a68a88f101c3878,
+        type: 3}
+      propertyPath: m_text
+      value: Accelerate
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d1f08fbf9b7a1741a68a88f101c3878, type: 3}
@@ -1017,6 +1042,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: -8
       objectReference: {fileID: 0}
+    - target: {fileID: 4169711211797345887, guid: 7789ae02368ce8b4ba33a8a6d774116a,
+        type: 3}
+      propertyPath: m_text
+      value: RCtrl
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7789ae02368ce8b4ba33a8a6d774116a, type: 3}
 --- !u!224 &8271492956753894805 stripped
@@ -1155,6 +1185,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6654926032966948725, guid: 7d1f08fbf9b7a1741a68a88f101c3878,
+        type: 3}
+      propertyPath: m_text
+      value: Drop Bomb
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d1f08fbf9b7a1741a68a88f101c3878, type: 3}
@@ -1335,6 +1370,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: -8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4169711211797345887, guid: 7789ae02368ce8b4ba33a8a6d774116a,
+        type: 3}
+      propertyPath: m_text
+      value: RShift
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7789ae02368ce8b4ba33a8a6d774116a, type: 3}
@@ -1593,6 +1633,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6654926032966948725, guid: 7d1f08fbf9b7a1741a68a88f101c3878,
+        type: 3}
+      propertyPath: m_text
+      value: Bank Left
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d1f08fbf9b7a1741a68a88f101c3878, type: 3}

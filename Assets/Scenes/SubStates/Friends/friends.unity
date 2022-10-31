@@ -708,7 +708,7 @@ RectTransform:
   - {fileID: 1997148408}
   - {fileID: 1682045415}
   m_Father: {fileID: 1758961009}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -1078,6 +1078,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 541060267229792785, guid: c3378fdf3a17774459ede4b0f52c4903,
+        type: 3}
+      propertyPath: m_text
+      value: No Search Results
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c3378fdf3a17774459ede4b0f52c4903, type: 3}
@@ -3984,6 +3989,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -22
       objectReference: {fileID: 0}
+    - target: {fileID: 541060267229792785, guid: c3378fdf3a17774459ede4b0f52c4903,
+        type: 3}
+      propertyPath: m_text
+      value: No Friends Added
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c3378fdf3a17774459ede4b0f52c4903, type: 3}
 --- !u!224 &1721602446 stripped
@@ -4041,8 +4051,8 @@ RectTransform:
   - {fileID: 623090137}
   - {fileID: 1851413193}
   - {fileID: 206113480}
-  - {fileID: 763622808}
   - {fileID: 409668440}
+  - {fileID: 763622808}
   m_Father: {fileID: 1978855721}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

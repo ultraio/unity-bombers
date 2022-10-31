@@ -2442,16 +2442,16 @@ MonoBehaviour:
       m_Calls: []
   m_text: COINS
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0083b1de1b413f3439ccc5c5efb799ee, type: 2}
-  m_sharedMaterial: {fileID: 21686706560853578, guid: 0083b1de1b413f3439ccc5c5efb799ee,
+  m_fontAsset: {fileID: 11400000, guid: 5d9494fd50cb0ab4f8d6ff0d86ffa70b, type: 2}
+  m_sharedMaterial: {fileID: 21314350374014256, guid: 5d9494fd50cb0ab4f8d6ff0d86ffa70b,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281576191
-  m_fontColor: {r: 1, g: 0.6666667, b: 0.2, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2474,7 +2474,7 @@ MonoBehaviour:
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 36
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 32
   m_VerticalAlignment: 4096
   m_textAlignment: 65535
@@ -3267,7 +3267,7 @@ PrefabInstance:
     - target: {fileID: 8947590470592178456, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
       propertyPath: m_text
-      value: $123.99
+      value: Buy
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b57fd582c72f2a479264597aca31ef2, type: 3}
