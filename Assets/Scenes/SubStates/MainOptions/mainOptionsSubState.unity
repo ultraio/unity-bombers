@@ -1069,7 +1069,7 @@ MonoBehaviour:
   GlobalVolumeDisplayText: {fileID: 0}
   MusicVolumeDisplayText: {fileID: 0}
   SoundVolumeDisplayText: {fileID: 0}
-  NotificationsText: {fileID: 1442510828}
+  NotificationsText: {fileID: 1053779057}
   FacebookButtonText: {fileID: 0}
   VersionText: {fileID: 615762510}
   EmailSection: {fileID: 840746527}
@@ -1677,6 +1677,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8947590470592178456, guid: 3b57fd582c72f2a479264597aca31ef2,
+        type: 3}
+      propertyPath: m_text
+      value: Enabled
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b57fd582c72f2a479264597aca31ef2, type: 3}
 --- !u!224 &1053779056 stripped
@@ -1685,6 +1690,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1053779055}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1053779057 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8947590470592178456, guid: 3b57fd582c72f2a479264597aca31ef2,
+    type: 3}
+  m_PrefabInstance: {fileID: 1053779055}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1053779058 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1452044200866202, guid: 3b57fd582c72f2a479264597aca31ef2,
@@ -2103,7 +2120,7 @@ PrefabInstance:
     - target: {fileID: 224537264005637318, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224537264005637318, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
@@ -2229,6 +2246,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947590470592178456, guid: 3b57fd582c72f2a479264597aca31ef2,
+        type: 3}
+      propertyPath: m_text
+      value: View
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b57fd582c72f2a479264597aca31ef2, type: 3}
@@ -2815,6 +2837,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947590470592178456, guid: 3b57fd582c72f2a479264597aca31ef2,
+        type: 3}
+      propertyPath: m_text
+      value: Log Out
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b57fd582c72f2a479264597aca31ef2, type: 3}
@@ -3481,7 +3508,7 @@ PrefabInstance:
     - target: {fileID: 4801283396511230172, guid: 010fe69313254564aa4d7c90747b30a2,
         type: 3}
       propertyPath: m_text
-      value: Email
+      value: Enter Email to Receive Reports
       objectReference: {fileID: 0}
     - target: {fileID: 4957689249797224561, guid: 010fe69313254564aa4d7c90747b30a2,
         type: 3}

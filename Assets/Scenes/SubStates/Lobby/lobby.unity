@@ -272,6 +272,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1452044200866202, guid: 3b57fd582c72f2a479264597aca31ef2, type: 3}
+      propertyPath: m_Name
+      value: ShowLocalChatButton
+      objectReference: {fileID: 0}
     - target: {fileID: 1472658651509878, guid: 3b57fd582c72f2a479264597aca31ef2, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -482,6 +486,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947590470592178456, guid: 3b57fd582c72f2a479264597aca31ef2,
+        type: 3}
+      propertyPath: m_text
+      value: Lobby
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b57fd582c72f2a479264597aca31ef2, type: 3}
@@ -1210,7 +1219,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1236524586}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -2314,6 +2323,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947590470592178456, guid: 3b57fd582c72f2a479264597aca31ef2,
+        type: 3}
+      propertyPath: m_text
+      value: Quit Game
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b57fd582c72f2a479264597aca31ef2, type: 3}
@@ -3824,10 +3838,10 @@ RectTransform:
   m_Children:
   - {fileID: 1099065802}
   - {fileID: 487252766}
-  - {fileID: 527743880}
   - {fileID: 1242122922}
-  - {fileID: 726994805}
+  - {fileID: 527743880}
   - {fileID: 1038027972}
+  - {fileID: 726994805}
   m_Father: {fileID: 1324488631}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5512,7 +5526,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 767856595}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -6126,8 +6140,8 @@ RectTransform:
   - {fileID: 2077370355}
   - {fileID: 825782651}
   - {fileID: 2020283319}
-  - {fileID: 1690740943}
   - {fileID: 311524535}
+  - {fileID: 1690740943}
   m_Father: {fileID: 1324488631}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6167,7 +6181,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 767856595}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -8042,6 +8056,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947590470592178456, guid: 3b57fd582c72f2a479264597aca31ef2,
+        type: 3}
+      propertyPath: m_text
+      value: Start Game
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b57fd582c72f2a479264597aca31ef2, type: 3}
@@ -10364,6 +10383,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1452044200866202, guid: 3b57fd582c72f2a479264597aca31ef2, type: 3}
+      propertyPath: m_Name
+      value: ShowGlobalChatButton
+      objectReference: {fileID: 0}
     - target: {fileID: 1472658651509878, guid: 3b57fd582c72f2a479264597aca31ef2, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -10594,6 +10617,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947590470592178456, guid: 3b57fd582c72f2a479264597aca31ef2,
+        type: 3}
+      propertyPath: m_text
+      value: Global
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b57fd582c72f2a479264597aca31ef2, type: 3}

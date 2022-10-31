@@ -1,13 +1,9 @@
-﻿using BrainCloud;
-using BrainCloudUNETExample.Connection;
+﻿using BrainCloudUNETExample.Connection;
 using Gameframework;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
-using System;
-using System.Collections;
 
 namespace BrainCloudUNETExample
 {
@@ -22,11 +18,10 @@ namespace BrainCloudUNETExample
         #region BaseState
         protected override void Start()
         {
-
-            Dropdown presetDropDownButton = GameObject.Find("PresetDropDownButton").GetComponent<Dropdown>();
-            Dropdown sizeDropDownButton = GameObject.Find("SizeDropDownButton").GetComponent<Dropdown>();
-            Dropdown gameDurationDropDownButton = GameObject.Find("TimeDropDownButton").GetComponent<Dropdown>();
-            Dropdown regionDurationDropDownButton = GameObject.Find("RegionDropDownButton").GetComponent<Dropdown>();
+            TMP_Dropdown presetDropDownButton = GameObject.Find("PresetDropDownButton").GetComponent<TMP_Dropdown>();
+            TMP_Dropdown sizeDropDownButton = GameObject.Find("SizeDropDownButton").GetComponent<TMP_Dropdown>();
+            TMP_Dropdown gameDurationDropDownButton = GameObject.Find("TimeDropDownButton").GetComponent<TMP_Dropdown>();
+            TMP_Dropdown regionDurationDropDownButton = GameObject.Find("RegionDropDownButton").GetComponent<TMP_Dropdown>();
 
             m_mapPresets = GameObject.Find("MapPresets").GetComponent<MapPresets>().m_presets;
             m_mapSizes = GameObject.Find("MapPresets").GetComponent<MapPresets>().m_mapSizes;
@@ -142,26 +137,26 @@ namespace BrainCloudUNETExample
             OnNewRoomWindow();
         }
 
-        public void SelectLayoutOption(Dropdown aOption)
+        public void SelectLayoutOption(TMP_Dropdown aOption)
         {
             m_layoutListSelection = aOption.value;
 
             OnNewRoomWindow();
         }
 
-        public void SelectSizeOption(Dropdown aOption)
+        public void SelectSizeOption(TMP_Dropdown aOption)
         {
             m_sizeListSelection = aOption.value;
 
             OnNewRoomWindow();
         }
 
-        public void SelectGameTime(Dropdown aOption)
+        public void SelectGameTime(TMP_Dropdown aOption)
         {
             m_gameDurationListSelection = aOption.value;
         }
 
-        public void SelectRegion(Dropdown aOption)
+        public void SelectRegion(TMP_Dropdown aOption)
         {
             m_regionListSelection = aOption.value;
             BombersNetworkManager.Instance.SetSelectedRegion(m_regions[m_regionListSelection].Lobby);
@@ -206,10 +201,10 @@ namespace BrainCloudUNETExample
 
         private void OnNewRoomWindow()
         {
-            Dropdown presetDropDownButton = GameObject.Find("PresetDropDownButton").GetComponent<Dropdown>();
-            Dropdown sizeDropDownButton = GameObject.Find("SizeDropDownButton").GetComponent<Dropdown>();
-            Dropdown timeDropDownButton = GameObject.Find("TimeDropDownButton").GetComponent<Dropdown>();
-            Dropdown regionDropDownButton = GameObject.Find("RegionDropDownButton").GetComponent<Dropdown>();
+            TMP_Dropdown presetDropDownButton = GameObject.Find("PresetDropDownButton").GetComponent<TMP_Dropdown>();
+            TMP_Dropdown sizeDropDownButton = GameObject.Find("SizeDropDownButton").GetComponent<TMP_Dropdown>();
+            TMP_Dropdown timeDropDownButton = GameObject.Find("TimeDropDownButton").GetComponent<TMP_Dropdown>();
+            TMP_Dropdown regionDropDownButton = GameObject.Find("RegionDropDownButton").GetComponent<TMP_Dropdown>();
 
             presetDropDownButton.captionText.text = m_mapPresets[m_layoutListSelection].m_name;
             presetDropDownButton.value = m_layoutListSelection;

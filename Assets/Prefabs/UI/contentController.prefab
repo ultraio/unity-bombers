@@ -101,7 +101,7 @@ RectTransform:
   m_GameObject: {fileID: 6684125923023412074}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.9999967, y: 0.9999967, z: 0.9999967}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6684125921292670552}
@@ -508,6 +508,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6654926032966948725, guid: 7d1f08fbf9b7a1741a68a88f101c3878,
+        type: 3}
+      propertyPath: m_text
+      value: RB - Drop Bomb
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d1f08fbf9b7a1741a68a88f101c3878, type: 3}
 --- !u!1 &6685423168450833118 stripped
@@ -682,6 +687,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6654926032966948725, guid: 7d1f08fbf9b7a1741a68a88f101c3878,
+        type: 3}
+      propertyPath: m_text
+      value: RT - Fire Guns
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d1f08fbf9b7a1741a68a88f101c3878, type: 3}
@@ -981,6 +991,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6654926032966948725, guid: 7d1f08fbf9b7a1741a68a88f101c3878,
+        type: 3}
+      propertyPath: m_text
+      value: Drop Bomb
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d1f08fbf9b7a1741a68a88f101c3878, type: 3}
@@ -1286,6 +1301,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6654926032966948725, guid: 7d1f08fbf9b7a1741a68a88f101c3878,
+        type: 3}
+      propertyPath: m_text
+      value: Fire Guns
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d1f08fbf9b7a1741a68a88f101c3878, type: 3}
 --- !u!1 &6685423167780422914 stripped
@@ -1460,6 +1480,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6654926032966948725, guid: 7d1f08fbf9b7a1741a68a88f101c3878,
+        type: 3}
+      propertyPath: m_text
+      value: LT - Accelerate
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d1f08fbf9b7a1741a68a88f101c3878, type: 3}
@@ -2038,6 +2063,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6654926032966948725, guid: 7d1f08fbf9b7a1741a68a88f101c3878,
+        type: 3}
+      propertyPath: m_text
+      value: Menu
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d1f08fbf9b7a1741a68a88f101c3878, type: 3}
 --- !u!1 &6685423167709776232 stripped
@@ -2212,6 +2242,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6654926032966948725, guid: 7d1f08fbf9b7a1741a68a88f101c3878,
+        type: 3}
+      propertyPath: m_text
+      value: Steer
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d1f08fbf9b7a1741a68a88f101c3878, type: 3}
@@ -2516,6 +2551,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6654926032966948725, guid: 7d1f08fbf9b7a1741a68a88f101c3878,
+        type: 3}
+      propertyPath: m_text
+      value: Accelerate
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d1f08fbf9b7a1741a68a88f101c3878, type: 3}
