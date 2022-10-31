@@ -73,20 +73,29 @@ namespace BrainCloudUNETExample
                     {
                         //failure
                         Debug.Log(string.Format("ultraCloud login failed | {0} {1} {2}", status, code, error));
+                        HudHelper.DisplayMessageDialog("AUTHENTICATION ERROR", string.Format("Ultra login failed | {0} {1} {2}", status, code, error), "OK");
                     };
 
                     GCore.Wrapper.Init();
                     GCore.Wrapper.AuthenticateUltra(username, token, true, successCB, failureCB);
-
                 };
+
                 UltraManager.singleton.OnUltraLoginFailure += (string error) =>
                 {
                     Debug.Log("Ultra login failed: " + error);
+                    HudHelper.DisplayMessageDialog("AUTHENTICATION ERROR", "PLEASE MAKE SURE YOU HAVE ACCESS TO ULTRA ENDPOINTS", "TRY AGAIN", () =>
+                    {
+                        LaunchBrowserLogin();
+                    });
                 };
 
-                UltraManager.singleton.Init();
-                GStateManager.Instance.EnableLoadingSpinner(true);
+                LaunchBrowserLogin();
             }
+        }
+
+        public void LaunchBrowserLogin()
+        {
+            UltraManager.singleton.Init();
         }
         override public void ExitSubState()
         {
