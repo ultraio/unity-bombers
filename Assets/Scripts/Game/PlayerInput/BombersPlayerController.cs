@@ -12,6 +12,7 @@ using BrainCloudUNETExample.Connection;
 using UnityEngine.UI;
 using Gameframework;
 using UnityEngine.EventSystems;
+using TMPro;
 
 namespace BrainCloudUNETExample.Game
 {
@@ -170,7 +171,7 @@ namespace BrainCloudUNETExample.Game
             {
                 while (goingToColor1)
                 {
-                    m_missionText.GetComponent<Text>().color = Color.Lerp(m_missionText.GetComponent<Text>().color, new Color(1, 0, 0, 1), 4 * Time.fixedDeltaTime);
+                    m_missionText.GetComponent<TextMeshProUGUI>().color = Color.Lerp(m_missionText.GetComponent<TextMeshProUGUI>().color, new Color(1, 0, 0, 1), 4 * Time.fixedDeltaTime);
                     time += Time.fixedDeltaTime;
                     if (time > 0.3f)
                     {
@@ -181,7 +182,7 @@ namespace BrainCloudUNETExample.Game
                 time = 0;
                 while (!goingToColor1)
                 {
-                    m_missionText.GetComponent<Text>().color = Color.Lerp(m_missionText.GetComponent<Text>().color, new Color(0.3f, 0, 0, 1), 4 * Time.fixedDeltaTime);
+                    m_missionText.GetComponent<TextMeshProUGUI>().color = Color.Lerp(m_missionText.GetComponent<TextMeshProUGUI>().color, new Color(0.3f, 0, 0, 1), 4 * Time.fixedDeltaTime);
                     time += Time.fixedDeltaTime;
                     if (time > 0.3f)
                     {
@@ -239,11 +240,11 @@ namespace BrainCloudUNETExample.Game
                 if (m_leftBounds)
                 {
                     m_missionText.SetActive(true);
-                    m_missionText.GetComponent<Text>().text = "0:0" + Mathf.CeilToInt(m_leftBoundsTimer);
+                    m_missionText.GetComponent<TextMeshProUGUI>().text = "0:0" + Mathf.CeilToInt(m_leftBoundsTimer);
                 }
                 else
                 {
-                    m_missionText.GetComponent<Text>().text = "";
+                    m_missionText.GetComponent<TextMeshProUGUI>().text = "";
                     m_missionText.SetActive(false);
                 }
             }

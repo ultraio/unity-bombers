@@ -7,6 +7,7 @@ using BrainCloud;
 using BrainCloudUNETExample.Connection;
 using BrainCloud.JsonFx.Json;
 using Gameframework;
+using TMPro;
 
 namespace BrainCloudUNETExample
 {
@@ -36,7 +37,7 @@ namespace BrainCloudUNETExample
         private GameObject LobbyChatCellSystem = null;
 
         [SerializeField]
-        private Text NoFriendsOnline = null;
+        private TextMeshProUGUI NoFriendsOnline = null;
 
         [SerializeField]
         private RectTransform FriendsScrollView = null;
@@ -65,6 +66,10 @@ namespace BrainCloudUNETExample
         [SerializeField]
         private Button StoreButton = null;
         [SerializeField]
+        private GameObject StoreBadge = null;
+        [SerializeField]
+        private TextMeshProUGUI StoreBadgeText = null;
+        [SerializeField]
         private Button OptionsButton = null;
         [SerializeField]
         private Button FriendsButton = null;
@@ -73,7 +78,7 @@ namespace BrainCloudUNETExample
         private Image TextInputMaxIndicator = null;
 
         [SerializeField]
-        private InputField ChatInputField = null;
+        private TMP_InputField ChatInputField = null;
 
         #region BaseState
         protected override void Start()
@@ -98,7 +103,7 @@ namespace BrainCloudUNETExample
             BombersNetworkManager.Instance.ConnectRTT();
 
             GameObject playerName = GameObject.Find("PlayerName");
-            m_inputField = playerName.GetComponent<InputField>();
+            m_inputField = playerName.GetComponent<TMP_InputField>();
             m_inputField.characterLimit = MAX_CHARACTERS_NAME;
             m_inputField.text = GPlayerMgr.Instance.PlayerData.PlayerName;
             m_inputField.interactable = false;
@@ -115,6 +120,8 @@ namespace BrainCloudUNETExample
             {
                 GStateManager.Instance.PushSubState(ConnectingSubState.STATE_NAME);
             }
+
+            StoreBadge.SetActive(false);
 
 #if STEAMWORKS_ENABLED
             QuitButton.SetActive(true);
@@ -154,6 +161,7 @@ namespace BrainCloudUNETExample
                 GEventManager.StopListening(GEventManager.ON_RTT_ENABLED, OnEnableRTTSuccess);
                 GEventManager.StopListening(GEventManager.ON_PLAYER_DATA_UPDATED, OnUpdateStats);
                 (BombersNetworkManager.singleton as BombersNetworkManager).DisconnectGlobalChat();
+                GCore.Wrapper.RTTService.DeregisterRTTBlockchainRefresh();
             }
             ChatInputField.onEndEdit.RemoveListener(delegate { OnEndEditHelper(); });
 
@@ -164,6 +172,7 @@ namespace BrainCloudUNETExample
         private void OnEnableRTTSuccess()
         {
             GCore.Wrapper.RTTService.RegisterRTTPresenceCallback(OnPresenceCallback);
+            GCore.Wrapper.RTTService.RegisterRTTBlockchainRefresh(OnBlockchainRefresh);
             GCore.Wrapper.Client.PresenceService.RegisterListenersForFriends(platform, true, presenceSuccess);
             OnUpdateStats();
         }
@@ -259,7 +268,7 @@ namespace BrainCloudUNETExample
                 GlobalChatEntered();
         }
 
-        public void OnGlobalChatValueChanged(InputField in_field)
+        public void OnGlobalChatValueChanged(TMP_InputField in_field)
         {
             if (in_field.isFocused)
             {
@@ -297,7 +306,7 @@ namespace BrainCloudUNETExample
             }
         }
 
-        private IEnumerator delayedSelect(InputField in_field)
+        private IEnumerator delayedSelect(TMP_InputField in_field)
         {
             in_field.interactable = false;
             yield return YieldFactory.GetWaitForSeconds(0.15f);
@@ -524,6 +533,7 @@ namespace BrainCloudUNETExample
 
         public void OpenHangar()
         {
+            StoreBadge.SetActive(false);
             GStateManager.Instance.PushSubState(HangarSubState.STATE_NAME);
         }
 
@@ -625,16 +635,16 @@ namespace BrainCloudUNETExample
 
                 m_statsImage.fillAmount = Mathf.InverseLerp(xpData.PrevThreshold, xpData.NextThreshold, xpData.ExperiencePoints);
 
-                Text tempText = null;
+                TextMeshProUGUI tempText = null;
                 for (int i = 2; i < playerStats.Count; ++i)
                 {
-                    tempText = Instantiate(m_statText, m_statsPanelContentLeft.transform).GetComponent<Text>();
-                    tempText.alignment = TextAnchor.MiddleLeft;
+                    tempText = Instantiate(m_statText, m_statsPanelContentLeft.transform).GetComponent<TextMeshProUGUI>();
+                    tempText.alignment = TextAlignmentOptions.MidlineLeft;
                     tempText.text = "  " + playerStats[i].Name;
-                    tempText = Instantiate(m_statValue, m_statsPanelContentRight.transform).GetComponent<Text>();
+                    tempText = Instantiate(m_statValue, m_statsPanelContentRight.transform).GetComponent<TextMeshProUGUI>();
                     tempText.text = HudHelper.ToGUIString(playerStats[i].Value);
                 }
-                GameObject.Find("RankText").GetComponent<Text>().text = rank;
+                GameObject.Find("RankText").GetComponent<TextMeshProUGUI>().text = rank;
             }
         }
 
@@ -746,6 +756,21 @@ namespace BrainCloudUNETExample
             OnGetPresenceOfFriendsSuccess("", null);
         }
 
+        private void OnBlockchainRefresh(string in_message)
+        {
+            Dictionary<string, object> jsonMessage = (Dictionary<string, object>)JsonReader.Deserialize(in_message);
+            switch (jsonMessage["operation"] as string)
+            {
+                case "BOMBER_AVAILABLE": // TODO: Get proper Json operation
+                    // TODO: Need to update notification badge; probably store count on player?
+                    StoreBadge.SetActive(true);
+                    return;
+                default:
+                    Debug.Log("(Blockchain Refresh received - NEED TO SHOW MESSAGE)");
+                    return;
+            }
+        }
+
         private FriendsListItem CreateFriendsListItem(Transform in_parent = null)
         {
             FriendsListItem toReturn = null;
@@ -847,7 +872,7 @@ namespace BrainCloudUNETExample
         }
 
         private string platform = "";   // denotes All
-        private InputField m_inputField = null;
+        private TMP_InputField m_inputField = null;
         private int MIN_CHARACTERS_NAME = 3;
         private int MAX_CHARACTERS_NAME = 16;
 

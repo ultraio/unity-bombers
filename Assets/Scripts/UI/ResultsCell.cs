@@ -1,25 +1,24 @@
 ﻿using Gameframework;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace BrainCloudUNETExample
 {
     public class ResultsCell : BaseBehaviour
     {
-#pragma warning disable 649
         [SerializeField]
         private Image PlayAgainIcon = null;
         [SerializeField]
         private Image QuitIcon = null;
         [SerializeField]
-        private Text Name = null;
+        private TextMeshProUGUI Name = null;
         [SerializeField]
-        private Text KDRatio = null;
+        private TextMeshProUGUI KDRatio = null;
         [SerializeField]
-        private Text Score = null;
+        private TextMeshProUGUI Score = null;
         [SerializeField]
-        private Text Ping = null;
-#pragma warning restore 649
+        private TextMeshProUGUI Ping = null;
 
         public void UpdateDisplay(ResultsData in_data)
         {

@@ -4,13 +4,14 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using TMPro;
 
 namespace BrainCloudUNETExample
 {
     public class HangarPlaneCard : BaseBehaviour
     {
-        public Text Title = null;
-        public Text Description = null;
+        public TextMeshProUGUI Title = null;
+        public TextMeshProUGUI Description = null;
         public Button ActivateButton = null;
         public Image UpperImage = null;
         public Image Spinner = null;
