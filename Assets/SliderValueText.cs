@@ -12,6 +12,8 @@ public class SliderValueText : MonoBehaviour
         m_sliderText = GetComponent<TextMeshProUGUI>();
 
         GetComponentInParent<Slider>().onValueChanged.AddListener(HandleValueChanged);
+
+        HandleValueChanged(GetComponentInParent<Slider>().value);
     }
 
     private void HandleValueChanged(float value)

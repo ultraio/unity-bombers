@@ -1,9 +1,9 @@
 ﻿using BrainCloudUNETExample.Connection;
 using Gameframework;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 namespace BrainCloudUNETExample
 {
@@ -40,7 +40,7 @@ namespace BrainCloudUNETExample
             BombersNetworkManager.Instance.SetSelectedRegion(m_regions[m_regionListSelection].Lobby);
 
             string str = m_state == eCreateGameState.NEW_ROOM ? "Create Game" : "Find Game";
-            transform.FindDeepChild("CreateButton").FindDeepChild("Text").GetComponent<Text>().text = str;
+            transform.FindDeepChild("CreateButton").FindDeepChild("Text").GetComponent<TextMeshProUGUI>().text = str;
             m_textMesh.text = str.ToUpper();
 
             List<string> items = new List<string>();
@@ -82,7 +82,7 @@ namespace BrainCloudUNETExample
 
             OnNewRoomWindow();
 
-            transform.FindDeepChild("Room Name").GetComponent<InputField>().text = GPlayerMgr.Instance.PlayerData.PlayerName + "'s Room";
+            transform.FindDeepChild("Room Name").GetComponent<TMP_InputField>().text = GPlayerMgr.Instance.PlayerData.PlayerName + "'s Room";
 
             _stateInfo = new StateInfo(STATE_NAME, this);
             base.Start();
@@ -110,7 +110,7 @@ namespace BrainCloudUNETExample
         {
             m_state = in_bCreateGame ? eCreateGameState.NEW_ROOM : eCreateGameState.FIND_ROOM;
             string str = m_state == eCreateGameState.NEW_ROOM ? "Create Game" : "Find Game";
-            transform.FindDeepChild("CreateButton").FindDeepChild("Text").GetComponent<Text>().text = str;
+            transform.FindDeepChild("CreateButton").FindDeepChild("Text").GetComponent<TextMeshProUGUI>().text = str;
             m_textMesh.text = str.ToUpper();
         }
 
@@ -191,8 +191,8 @@ namespace BrainCloudUNETExample
 
         private void OnConfirmCreateGame(string in_name)
         {
-            m_roomLevelRangeMax = int.Parse(this.transform.FindDeepChild("Box 2").GetComponent<InputField>().text.ToString());
-            m_roomLevelRangeMin = int.Parse(this.transform.FindDeepChild("Box 1").GetComponent<InputField>().text.ToString());
+            m_roomLevelRangeMax = int.Parse(this.transform.FindDeepChild("Box 2").GetComponent<TMP_InputField>().text.ToString());
+            m_roomLevelRangeMin = int.Parse(this.transform.FindDeepChild("Box 1").GetComponent<TMP_InputField>().text.ToString());
 
             var matchAttributes = new Dictionary<string, object>() { { "minLevel", m_roomLevelRangeMin }, { "maxLevel", m_roomLevelRangeMax } };
 

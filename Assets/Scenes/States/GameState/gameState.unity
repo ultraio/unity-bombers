@@ -13757,7 +13757,7 @@ GameObject:
   - component: {fileID: 1523599457}
   - component: {fileID: 1523599458}
   m_Layer: 5
-  m_Name: startingIn
+  m_Name: startingInCountdownText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
