@@ -3,6 +3,7 @@ using Gameframework;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 #if FACEBOOK_ENABLED
 using Facebook.Unity;
 #endif
@@ -15,8 +16,8 @@ namespace BrainCloudUNETExample
         public const string DEFAULT_NAME = "DEFAULT NAME";
 
         #region public Properties
-        public Text UserName;
-        public Text Status;
+        public TextMeshProUGUI UserName;
+        public TextMeshProUGUI Status;
         public GameObject AddButton;
         public GameObject RemoveButton;
         public Image PresenceIcon = null;

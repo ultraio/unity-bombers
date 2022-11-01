@@ -1,6 +1,7 @@
 ﻿using Gameframework;
 using BrainCloud;
 using BrainCloud.Common;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,17 +11,6 @@ namespace BrainCloudUNETExample
     public class ConnectingSubState : BaseSubState
     {
         public static string STATE_NAME = "connectingSubState";
-
-        public InputField UsernameBox = null;
-        public InputField PasswordBox = null;
-
-        public Sprite IconEmail = null;
-        public Sprite IconPilot = null;
-
-        public GameObject ButtonGroup = null;
-        public GameObject ButtonGroupWithCancel = null;
-        public Text InstructionText = null;
-        public Text LoginButtonText = null;
 
         [SerializeField]
         private GameObject Panel = null;
@@ -45,7 +35,6 @@ namespace BrainCloudUNETExample
             if (in_state as ConnectingSubState)
             {
                 stateMgr.OnInitializeDelegate -= onPushConnectingSubStateLoaded;
-                ((ConnectingSubState)in_state).Init(ms_instructionText, ms_buttonText, ms_canCancel);
             }
         }
 
@@ -72,20 +61,29 @@ namespace BrainCloudUNETExample
                     {
                         //failure
                         Debug.Log(string.Format("ultraCloud login failed | {0} {1} {2}", status, code, error));
+                        HudHelper.DisplayMessageDialog("AUTHENTICATION ERROR", string.Format("Ultra login failed | {0} {1} {2}", status, code, error), "OK");
                     };
 
                     GCore.Wrapper.Init();
                     GCore.Wrapper.AuthenticateUltra(username, token, true, successCB, failureCB);
-
                 };
+
                 UltraManager.singleton.OnUltraLoginFailure += (string error) =>
                 {
                     Debug.Log("Ultra login failed: " + error);
+                    HudHelper.DisplayMessageDialog("AUTHENTICATION ERROR", "PLEASE MAKE SURE YOU HAVE ACCESS TO ULTRA ENDPOINTS", "TRY AGAIN", () =>
+                    {
+                        LaunchBrowserLogin();
+                    });
                 };
 
-                UltraManager.singleton.Init();
-                GStateManager.Instance.EnableLoadingSpinner(true);
+                LaunchBrowserLogin();
             }
+        }
+
+        public void LaunchBrowserLogin()
+        {
+            UltraManager.singleton.Init();
         }
         override public void ExitSubState()
         {
@@ -99,62 +97,8 @@ namespace BrainCloudUNETExample
         }
         #endregion
 
-        #region Public
-        public void OnLoginButton()
-        {
-            if (ValidateUserName())
-            {
-                if (m_defaultAuthType == AuthenticationType.Universal)
-                {
-                    GCore.Wrapper.IdentityService.AttachUniversalIdentity(UsernameBox.text, PasswordBox.text, onAttachSuccess, onAuthFail);
-                    m_lastAuthType = AuthenticationType.Universal;
-                }
-                else if (m_defaultAuthType == AuthenticationType.Email)
-                {
-                    GCore.Wrapper.IdentityService.AttachEmailIdentity(UsernameBox.text, PasswordBox.text, onAttachSuccess, onAuthFail);
-                    m_lastAuthType = AuthenticationType.Email;
-                }
-                // Add support for other Authentication types here
-            }
-        }
-
-        public void OnCancelButton()
-        {
-            GStateManager.Instance.EnableLoadingSpinner(false);
-            ExitSubState();
-        }
-
-        public void setAuthenticationType(AuthenticationType in_authType)
-        {
-            m_defaultAuthType = in_authType;
-            updateViewDisplay();
-        }
-        #endregion
-
         #region Private
-        private void Init(string in_instructionText, string in_buttonText, bool in_canCancel)
-        {
-            InstructionText.text = in_instructionText;
-            LoginButtonText.text = in_buttonText;
-            ButtonGroup.SetActive(!in_canCancel);
-            ButtonGroupWithCancel.SetActive(in_canCancel);
-        }
 
-        private void Update()
-        {
-            if (UsernameBox.isFocused && (Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.Return)))
-            {
-                UsernameBox.DeactivateInputField();
-                PasswordBox.ActivateInputField();
-                PasswordBox.Select();
-            }
-            else if (PasswordBox.isFocused && (Input.GetKeyDown(KeyCode.Tab)))
-            {
-                PasswordBox.DeactivateInputField();
-                UsernameBox.ActivateInputField();
-                UsernameBox.Select();
-            }
-        }
 
         // call this when you want to close down the state
         private void onCompleteConnectingSubState()
@@ -259,9 +203,6 @@ namespace BrainCloudUNETExample
                         authenticateBraincloud();
                     }
                     break;
-                case ReasonCodes.MERGE_PROFILES:
-                    OnMergeIdentity();
-                    break;
                 case ReasonCodes.DUPLICATE_IDENTITY_TYPE:
                 case ReasonCodes.NEW_CREDENTIAL_IN_USE:
                     displayDuplicateIdentityTypeMessage();
@@ -319,25 +260,6 @@ namespace BrainCloudUNETExample
             }
         }
 
-        private void OnMergeIdentity()
-        {
-            GStateManager.Instance.EnableLoadingSpinner(true);
-
-            if (m_lastAuthType == AuthenticationType.Universal)
-                GCore.Wrapper.IdentityService.MergeUniversalIdentity(UsernameBox.text, PasswordBox.text, onMergeIdentitySuccess, onAuthFail);
-            else if (m_lastAuthType == AuthenticationType.Email)
-                GCore.Wrapper.IdentityService.MergeEmailIdentity(UsernameBox.text, PasswordBox.text, onMergeIdentitySuccess, onAuthFail);
-            else if (m_lastAuthType == AuthenticationType.Steam)
-                GSteamAuthManager.Instance.MergeSteamAccount(onMergeIdentitySuccess, onAuthFail);
-
-            // Add support for other Authentication types here
-        }
-
-        private void onMergeIdentitySuccess(string jsonResponse, object cbObject)
-        {
-            GPlayerMgr.Instance.ReadPlayerState(onReadPlayerStateAfterMergeIdentitySuccess);
-        }
-
         private void onReadPlayerStateAfterMergeIdentitySuccess(string jsonResponse, object cbObject)
         {
             GStateManager.Instance.EnableLoadingSpinner(false);
@@ -345,37 +267,8 @@ namespace BrainCloudUNETExample
             onCompleteConnectingSubState();
         }
 
-        private bool ValidateUserName()
-        {
-            UsernameBox.text = UsernameBox.text.Trim();
-            if (UsernameBox.text.Length < MIN_CHARACTERS)
-            {
-                HudHelper.DisplayMessageDialog("DISALLOWED NAME", "THE NAME MUST BE AT LEAST " + MIN_CHARACTERS + " CHARACTERS LONG.", "OK");
-                UsernameBox.text = GPlayerMgr.Instance.PlayerData.PlayerName;
-                return false;
-            }
-            return true;
-        }
 
-        private void updateViewDisplay()
-        {
-            UsernameBox.characterLimit = MAX_CHARACTERS;
-            PasswordBox.characterLimit = MAX_CHARACTERS;
 
-            if (m_defaultAuthType == AuthenticationType.Universal)
-            {
-                UsernameBox.transform.Find("Placeholder").GetComponent<Text>().text = "Enter Username";
-                UsernameBox.transform.Find("Icon").GetComponent<Image>().sprite = IconPilot;
-                UsernameBox.contentType = InputField.ContentType.Alphanumeric;
-            }
-            else if (m_defaultAuthType == AuthenticationType.Email)
-            {
-                UsernameBox.transform.Find("Placeholder").GetComponent<Text>().text = "Enter Email";
-                UsernameBox.transform.Find("Icon").GetComponent<Image>().sprite = IconEmail;
-                UsernameBox.contentType = InputField.ContentType.EmailAddress;
-            }
-            // Add support for other Authentication types here
-        }
         #endregion
         private int MIN_CHARACTERS = 3;
         private int MAX_CHARACTERS = 25;
