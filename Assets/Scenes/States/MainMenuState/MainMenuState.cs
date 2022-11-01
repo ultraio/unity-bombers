@@ -161,7 +161,7 @@ namespace BrainCloudUNETExample
                 GEventManager.StopListening(GEventManager.ON_RTT_ENABLED, OnEnableRTTSuccess);
                 GEventManager.StopListening(GEventManager.ON_PLAYER_DATA_UPDATED, OnUpdateStats);
                 (BombersNetworkManager.singleton as BombersNetworkManager).DisconnectGlobalChat();
-                GCore.Wrapper.RTTService.DeregisterRTTBlockchainRefresh();
+                GCore.Wrapper.RTTService.RegisterRTTBlockchainItemEvent(OnBlockchainRefresh);
             }
             ChatInputField.onEndEdit.RemoveListener(delegate { OnEndEditHelper(); });
 
@@ -172,7 +172,7 @@ namespace BrainCloudUNETExample
         private void OnEnableRTTSuccess()
         {
             GCore.Wrapper.RTTService.RegisterRTTPresenceCallback(OnPresenceCallback);
-            GCore.Wrapper.RTTService.RegisterRTTBlockchainRefresh(OnBlockchainRefresh);
+            GCore.Wrapper.RTTService.RegisterRTTBlockchainItemEvent(OnBlockchainRefresh);
             GCore.Wrapper.Client.PresenceService.RegisterListenersForFriends(platform, true, presenceSuccess);
             OnUpdateStats();
         }
@@ -761,8 +761,9 @@ namespace BrainCloudUNETExample
             Dictionary<string, object> jsonMessage = (Dictionary<string, object>)JsonReader.Deserialize(in_message);
             switch (jsonMessage["operation"] as string)
             {
-                case "BOMBER_AVAILABLE": // TODO: Get proper Json operation
+                case "ITEM_EVENT": // TODO: Get proper Json operation
                     // TODO: Need to update notification badge; probably store count on player?
+
                     StoreBadge.SetActive(true);
                     return;
                 default:
