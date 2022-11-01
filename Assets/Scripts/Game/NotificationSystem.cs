@@ -1,4 +1,3 @@
-using BrainCloud;
 using BrainCloud.JsonFx.Json;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,26 +9,28 @@ namespace Gameframework
 {
     public class NotificationSystem : MonoBehaviour
     {
-        [Header("Announcement")]
-        [SerializeField] private RectTransform AnnouncementRect = null;
-        [SerializeField] private CanvasGroup AnnouncementCG = null;
-        [SerializeField] private TextMeshProUGUI AnnouncementText = null;
+        private static int PLAY_ANIMATION = Animator.StringToHash("PlayAnimation");
+        private static int RESET_ANIMATION = Animator.StringToHash("ResetAnimation");
 
-        [Header("Popup")]
-        [SerializeField] private RectTransform PopupRect = null;
-        [SerializeField] private CanvasGroup PopupCG = null;
-        [SerializeField] private Image PopupImage = null;
-        [SerializeField] private TextMeshProUGUI PopupMessageText = null;
-        [SerializeField] private GameObject PopupButton = null;
-        //[SerializeField] private TextMeshProUGUI PopupButtonText = null;
+        [Header("Notification System")]
+        [SerializeField] private Animator NewBombersAnimator = null;
+        [SerializeField] private GameObject Canvas = null;
 
-        private string currentPlaneSkinID = ""; // Stores Prefab ID for plane skin
+        [Header("Message")]
+        [SerializeField] private Image MessageImage = null;
+
+        [Header("Dialog")]
+        [SerializeField] private Image DialogImage = null;
+        [SerializeField] private TextMeshProUGUI DialogMessageText = null;
+        [SerializeField] private GameObject DialogButton = null;
+
+        private int currentPlaneSkinID = 0; // Stores Prefab ID for plane skin
 
         private void Start()
         {
             ResetAnimation();
 
-            currentPlaneSkinID = ""; // Get current ID?
+            currentPlaneSkinID = 0; // Get current ID?
 
             GCore.Wrapper.RTTService.RegisterRTTBlockchainRefresh(OnBlockchainRefresh);
         }
@@ -49,8 +50,10 @@ namespace Gameframework
                 case "BOMBER_AVAILABLE": // TODO: Get proper Json operation
                     // TODO: Be able to get the ID of the new unlocked Bomber from Json
                     // TODO: Populate various components with proper Json data (image, message)
-                    AnnouncementText.text = "NEW BOMBER AVAILABLE!";
-                    PopupMessageText.text = "New Bomber Available!";
+                    MessageImage.sprite = null; // TODO: Grab the sprite based on the bomber ID
+                    DialogImage.sprite = null; // TODO: Grab the sprite based on the bomber ID
+                    DialogMessageText.text = "New Bomber Available!";
+                    DialogButton.gameObject.SetActive(true);
                     StartAnimation();
                     return;
                 default:
@@ -61,33 +64,15 @@ namespace Gameframework
 
         private void ResetAnimation()
         {
-            StopAllCoroutines();
-            PopupCG.interactable = false;
-            AnnouncementRect.gameObject.SetActive(false);
-            PopupRect.gameObject.SetActive(false);
+            NewBombersAnimator.SetTrigger(RESET_ANIMATION);
+            NewBombersAnimator.ResetTrigger(PLAY_ANIMATION);
         }
 
         private void StartAnimation()
         {
             ResetAnimation();
 
-            //TODO: Should animation be done via Mecanim? Or scripted?
-            StartCoroutine(TempAnimation());
-        }
-
-        private IEnumerator TempAnimation()
-        {
-            AnnouncementRect.gameObject.SetActive(true);
-
-            yield return new WaitForSecondsRealtime(1.5f);
-
-            AnnouncementRect.gameObject.SetActive(false);
-            PopupRect.gameObject.SetActive(true);
-            PopupCG.interactable = true;
-
-            yield return new WaitForSecondsRealtime(3.0f);
-
-            ResetAnimation();
+            NewBombersAnimator.SetTrigger(PLAY_ANIMATION);
         }
 
         public void OnDitchAndSwitchButton()
@@ -95,7 +80,7 @@ namespace Gameframework
             ResetAnimation();
 
             // TODO: Destroy plane and set the new ID to be able to swap to new plane skin
-            currentPlaneSkinID = ""; // Store new ID?
+            currentPlaneSkinID = 0; // Store new ID?
 
             Debug.Log("Ditching & Switching...");
         }
