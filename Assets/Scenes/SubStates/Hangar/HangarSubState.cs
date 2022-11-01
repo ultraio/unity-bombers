@@ -75,6 +75,10 @@ namespace BrainCloudUNETExample
                         card.LateInit(planeDataEntry, kvp.Value);
                         card.OnActivateClickedAction += OnSetPlaneID;
                     }
+                    else
+                    {
+                        Debug.Log("Couldn't find plane skin data with ID: " + kvp.Key);
+                    }
                 }
             };
 
