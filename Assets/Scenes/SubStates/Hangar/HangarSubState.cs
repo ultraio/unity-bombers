@@ -5,6 +5,7 @@ using Gameframework;
 using System.IO;
 using BrainCloud.LitJson;
 using BrainCloud;
+using System.Linq;
 
 namespace BrainCloudUNETExample
 {
@@ -32,25 +33,26 @@ namespace BrainCloudUNETExample
                 JsonData jsonData = JsonMapper.ToObject(response);
                 JsonData items = jsonData["data"]["response"]["items"];
 
-                HashSet<int> itemFactoryIds = new HashSet<int>();
+                Dictionary<int, int> itemFactoryIds = new Dictionary<int, int>();
+                PlaneScriptableObject[] planeSkinsDataObjects = Resources.LoadAll<PlaneScriptableObject>("PlaneData");
                 //add the default plane skin id of 0
-                itemFactoryIds.Add(0);
+                itemFactoryIds.Add(0, 1);
 
                 //loop all found NFTs
                 for (int i = 0; i < items.Count; i++)
                 {
                     int factoryID = int.Parse(items[i]["json"]["token_factory_id"].ToString());
-                    //Find matching plane skin data
-                    itemFactoryIds.Add(factoryID);
-                }
-                //populate local plane skin data based on found factory IDs
-                foreach (PlaneScriptableObject planeDataEntry in Resources.LoadAll("PlaneData", typeof(PlaneScriptableObject)))
-                {
-                    if(itemFactoryIds.Contains(planeDataEntry.planeID))
-                        planeData.Add(planeDataEntry);
+                    if (itemFactoryIds.ContainsKey(factoryID))
+                    {
+                        itemFactoryIds[factoryID]++;
+                    }
+                    else
+                    {
+                        itemFactoryIds.Add(factoryID, 1);
+                    }
                 }
                 //Get the users selected plane skin ID
-                UpdateData();
+                UpdateUserSelection();
 
                 //clear list
                 content = this.transform.FindDeepChild("Content");
@@ -63,30 +65,24 @@ namespace BrainCloudUNETExample
                 GameObject cardGO;
                 HangarPlaneCard card;
                 
-                for (int i = 0; i < planeData.Count; ++i)
+                foreach(KeyValuePair<int, int> kvp in itemFactoryIds)
                 {
-                    cardGO = GEntityFactory.Instance.CreateResourceAtPath("Prefabs/UI/HangarPlaneCard", content);
-                    card = cardGO.GetComponent<HangarPlaneCard>();
-                    card.LateInit(planeData[i]);
-                    card.OnActivateClickedAction += OnSetPlaneID;
+                    PlaneScriptableObject planeDataEntry = planeSkinsDataObjects.Where(x => x.planeID == kvp.Key).FirstOrDefault();
+                    if (planeDataEntry != null)
+                    {
+                        cardGO = GEntityFactory.Instance.CreateResourceAtPath("Prefabs/UI/HangarPlaneCard", content);
+                        card = cardGO.GetComponent<HangarPlaneCard>();
+                        card.LateInit(planeDataEntry, kvp.Value);
+                        card.OnActivateClickedAction += OnSetPlaneID;
+                    }
                 }
             };
 
             FailureCallback failureCB = (status, code, error, cbObject) =>
             {
                 HudHelper.DisplayMessageDialog("BLOCKCHAIN ERROR", string.Format("Blockchain items failed to load | {0} {1} {2}", status, code, error), "OK");
-                //Load default plane skin
-                foreach (PlaneScriptableObject planeDataEntry in Resources.LoadAll("PlaneData", typeof(PlaneScriptableObject)))
-                {
-                    //PlaneScriptableObject planeDataEntry = Resources.Load<PlaneScriptableObject>(Path.Combine("PlaneData", Path.GetFileNameWithoutExtension(f.Name)));
-                    if (planeDataEntry.planeID == 0)
-                    {
-                        planeData.Add(planeDataEntry);
-                        break;
-                    }
-                }
 
-                UpdateData();
+                UpdateUserSelection();
 
                 //clear list
                 content = this.transform.FindDeepChild("Content");
@@ -95,12 +91,13 @@ namespace BrainCloudUNETExample
                     Destroy(content.GetChild(i).gameObject);
                 }
 
-                //Add and initialize the plane skin UI cards
+                //Just display the default plane
                 GameObject cardGO;
                 HangarPlaneCard card;
                 cardGO = GEntityFactory.Instance.CreateResourceAtPath("Prefabs/UI/HangarPlaneCard", content);
                 card = cardGO.GetComponent<HangarPlaneCard>();
-                card.LateInit(planeData[0]);
+                PlaneScriptableObject defaultPlaneData = Resources.Load<PlaneScriptableObject>("PlaneData/00_Default");
+                card.LateInit(defaultPlaneData, 1);
                 card.OnActivateClickedAction += OnSetPlaneID;
             };
 
@@ -115,7 +112,7 @@ namespace BrainCloudUNETExample
 
         #region Private
 
-        private void UpdateData()
+        private void UpdateUserSelection()
         {
             GCore.Wrapper.EntityService.GetSingleton("PlaneSkin", OnPlaneIDSuccessCallback, OnPlaneIDFailureCallback);
         }
@@ -164,7 +161,7 @@ namespace BrainCloudUNETExample
 
         private void OnSetPlaneIDSuccess(string responseData, object cbObject)
         {
-            UpdateData();
+            UpdateUserSelection();
         }
 
         #endregion
