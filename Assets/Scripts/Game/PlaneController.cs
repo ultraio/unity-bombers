@@ -112,13 +112,11 @@ namespace BrainCloudUNETExample.Game
 
             if (PlayerController.m_team == 1)
             {
-                teamBomberPath = bHasGoldWings ? "Bomber01Golden" : "Bomber01";
                 gameObject.layer = 8;
                 textMesh.color = Color.green;
             }
             else
             {
-                teamBomberPath = bHasGoldWings ? "Bomber02Golden" : "Bomber02";
                 gameObject.layer = 9;
                 textMesh.color = Color.red;
             }
@@ -127,7 +125,48 @@ namespace BrainCloudUNETExample.Game
             SmartsComponent.SetActive(true);
             SmartsComponent.layer = PlayerController.m_team == 1 ? 21 : 22; // debug collisions
 
-            //Get plane gameobject based on the players PlaneSkinID value
+            //Set skin
+            SetPlaneSkin();
+
+
+            m_gunCharge = transform.FindDeepChild("GunCharge").gameObject;
+            m_gunCharge.GetComponent<Animator>().speed = 1 / GConfigManager.GetFloatValue("MultishotDelay");
+            if (!PlayerController.IsLocalPlayer)
+                m_gunCharge.transform.Find("ChargeReady").transform.GetComponent<AudioSource>().enabled = false;
+
+            transform.localPosition = Vector3.zero;
+            m_rigidBody = GetComponent<Rigidbody>();
+
+            _syncTransformInformation = true;
+            // no delay by default
+            m_syncTransformationDelay = 0.0f;
+            transform.position = PlayerController.transform.position;
+
+            if (IsServer)
+            {
+                SendStart(_classType, PlayerId, _fileName, transform);
+            }
+
+            base.Start();
+        }
+
+        public void SetPlaneSkin(int skinID = -1)
+        {
+            if(skinID != -1)
+            {
+                PlayerController.MemberInfo.PlaneSkinID = skinID;
+            }
+
+            string teamBomberPath;
+
+            if (PlayerController.m_team == 1)
+            {
+                teamBomberPath = "Bomber01";
+            }
+            else
+            {
+                teamBomberPath = "Bomber02";
+            }
 
             GameObject playerPlaneObject = (GameObject)Resources.Load("Prefabs/Game/" + teamBomberPath);
 
@@ -149,6 +188,15 @@ namespace BrainCloudUNETExample.Game
             }
 
             Transform graphicPivot = transform.FindDeepChild("PlaneGraphic");
+            //if plane graphic already exists remove it
+            if(graphicPivot.childCount > 0)
+            {
+                foreach(Transform t in graphicPivot)
+                {
+                    Destroy(t.gameObject);
+                }
+            }
+
             GameObject graphic = (GameObject)Instantiate(playerPlaneObject, graphicPivot.position, graphicPivot.rotation);
             graphic.transform.parent = graphicPivot;
             graphic.transform.localPosition = Vector3.zero;
@@ -157,26 +205,6 @@ namespace BrainCloudUNETExample.Game
             m_bulletSpawnPoint = graphic.transform.FindDeepChild("BulletSpawn");
             m_leftContrail = graphic.transform.FindDeepChild("LeftSmokeTrail").GetComponent<ParticleSystem>();
             m_rightContrail = graphic.transform.FindDeepChild("RightSmokeTrail").GetComponent<ParticleSystem>();
-
-            m_gunCharge = transform.FindDeepChild("GunCharge").gameObject;
-            m_gunCharge.GetComponent<Animator>().speed = 1 / GConfigManager.GetFloatValue("MultishotDelay");
-            if (!PlayerController.IsLocalPlayer)
-                m_gunCharge.transform.Find("ChargeReady").transform.GetComponent<AudioSource>().enabled = false;
-
-            transform.localPosition = Vector3.zero;
-            m_rigidBody = GetComponent<Rigidbody>();
-
-            _syncTransformInformation = true;
-            // no delay by default
-            m_syncTransformationDelay = 0.0f;
-            transform.position = PlayerController.transform.position;
-
-            if (IsServer)
-            {
-                SendStart(_classType, PlayerId, _fileName, transform);
-            }
-
-            base.Start();
         }
 
         public void ResetGunCharge()

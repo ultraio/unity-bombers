@@ -164,7 +164,6 @@ namespace BrainCloudUNETExample
                 GEventManager.StopListening(GEventManager.ON_RTT_ENABLED, OnEnableRTTSuccess);
                 GEventManager.StopListening(GEventManager.ON_PLAYER_DATA_UPDATED, OnUpdateStats);
                 (BombersNetworkManager.singleton as BombersNetworkManager).DisconnectGlobalChat();
-                GCore.Wrapper.RTTService.RegisterRTTBlockchainItemEvent(OnBlockchainItemEvent);
             }
             ChatInputField.onEndEdit.RemoveListener(delegate { OnEndEditHelper(); });
 
@@ -784,10 +783,10 @@ namespace BrainCloudUNETExample
                         StoreBadge.SetActive(true);
                     }
 
-                    break;
+                    return;
                 default:
                     Debug.Log("(Blockchain Refresh received - NEED TO SHOW MESSAGE)");
-                    break;
+                    return;
             }
         }
 

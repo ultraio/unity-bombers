@@ -12,6 +12,7 @@ using UnityEngine.UI;
 using BrainCloudUNETExample.Connection;
 using Gameframework;
 using TMPro;
+using BrainCloud.LitJson;
 
 namespace BrainCloudUNETExample.Game
 {
@@ -1878,6 +1879,43 @@ namespace BrainCloudUNETExample.Game
                     break;
                 }
             }
+        }
+
+        public void DitchAndSwitchPlaneSkin(int newSkinID)
+        {
+            BombersPlayerController tempController = BombersNetworkManager.LocalPlayer;
+
+            //Ditch plane
+            GameObject explosion = (GameObject)Instantiate((GameObject)Resources.Load("Prefabs/Game/" + "PlayerExplosion"),
+                                   tempController.m_playerPlane.transform.position,
+                                   tempController.m_playerPlane.transform.rotation);
+            explosion.GetComponent<AudioSource>().Play();
+
+            tempController.DestroyPlayerPlane();
+
+            //Switch skins to newSkinID
+            Dictionary<string, object> stats = new Dictionary<string, object>
+            {
+                {GBomberRTTConfigManager.PLANE_SKIN_ID, newSkinID}
+            };
+
+            JsonData jsonData = JsonMapper.ToJson(stats);
+
+            Dictionary<string, object> aclData = new Dictionary<string, object>
+            {
+                {"other", 1 }
+            };
+            JsonData aclJson = JsonMapper.ToJson(aclData);
+            //Update the singleton representing the plane skin choice
+            GCore.Wrapper.EntityService.UpdateSingleton("PlaneSkin", jsonData.ToString(), aclJson.ToString(), 1);
+
+            //Update local player lobby member info
+            LobbyMemberInfo memberInfo = tempController.MemberInfo;
+            memberInfo.ExtraData[GBomberRTTConfigManager.PLANE_SKIN_ID] = newSkinID;
+
+            tempController.m_playerPlane.SetPlaneSkin(newSkinID);
+
+            StartCoroutine(RespawnPlayer(tempController));
         }
 
         //[ClientRpc]
