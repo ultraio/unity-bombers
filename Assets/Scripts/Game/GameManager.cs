@@ -68,6 +68,8 @@ namespace BrainCloudUNETExample.Game
         private RectTransform m_greenChevron = null;
         [SerializeField]
         private RectTransform m_redChevron = null;
+        [SerializeField]
+        private GameObject m_notificationSystem = null;
 
         public GameObject MissionText { get { return m_missionText; } }
 
@@ -142,6 +144,7 @@ namespace BrainCloudUNETExample.Game
             m_missionText = m_HUD.transform.Find("MissionText").gameObject;
             m_missionText.SetActive(false);
             m_HUD.SetActive(false);
+            m_notificationSystem.SetActive(false);
 
             //resources
             m_carrierExplosion01 = Resources.Load("Prefabs/Game/CarrierExplosion01") as GameObject;
@@ -1113,6 +1116,7 @@ namespace BrainCloudUNETExample.Game
                         //GameManager.SERVER_BOT
                         List<LobbyMemberInfo> members = BombersNetworkManager.LobbyInfo.Members.FindAll(x => !x.Name.Contains(SERVER_BOT));
                         GFriendsManager.Instance.SetRecentlyViewedData(BombersNetworkManager.LobbyInfo.Members);
+                        m_notificationSystem.SetActive(true);
                     }
 
                     if (m_initialLoadingScreen.GetComponent<CanvasGroup>().alpha <= 0)
@@ -1255,7 +1259,7 @@ namespace BrainCloudUNETExample.Game
                 case eGameState.GAME_STATE_GAME_OVER:
                     m_resultsWindow.gameObject.SetActive(true);
                     m_HUD.SetActive(false);
-
+                    Destroy(m_notificationSystem);
                     OnScoresWindow();
                     break;
 

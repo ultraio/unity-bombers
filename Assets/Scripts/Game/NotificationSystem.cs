@@ -1,4 +1,3 @@
-using BrainCloud;
 using BrainCloud.JsonFx.Json;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,14 +9,17 @@ namespace Gameframework
 {
     public class NotificationSystem : MonoBehaviour
     {
+        private static int PLAY_ANIMATION = Animator.StringToHash("PlayAnimation");
+        private static int RESET_ANIMATION = Animator.StringToHash("ResetAnimation");
+
+        [Header("Notification System")]
+        [SerializeField] private Animator NewBombersAnimator = null;
+        [SerializeField] private GameObject Canvas = null;
+
         [Header("Message")]
-        [SerializeField] private RectTransform MessageRect = null;
-        [SerializeField] private CanvasGroup MessageCG = null;
         [SerializeField] private Image MessageImage = null;
 
         [Header("Dialog")]
-        [SerializeField] private RectTransform DialogRect = null;
-        [SerializeField] private CanvasGroup DialogCG = null;
         [SerializeField] private Image DialogImage = null;
         [SerializeField] private TextMeshProUGUI DialogMessageText = null;
         [SerializeField] private GameObject DialogButton = null;
@@ -51,6 +53,7 @@ namespace Gameframework
                     MessageImage.sprite = null; // TODO: Grab the sprite based on the bomber ID
                     DialogImage.sprite = null; // TODO: Grab the sprite based on the bomber ID
                     DialogMessageText.text = "New Bomber Available!";
+                    DialogButton.gameObject.SetActive(true);
                     StartAnimation();
                     return;
                 default:
@@ -61,33 +64,15 @@ namespace Gameframework
 
         private void ResetAnimation()
         {
-            StopAllCoroutines();
-            DialogCG.interactable = false;
-            MessageRect.gameObject.SetActive(false);
-            DialogRect.gameObject.SetActive(false);
+            NewBombersAnimator.SetTrigger(RESET_ANIMATION);
+            NewBombersAnimator.ResetTrigger(PLAY_ANIMATION);
         }
 
         private void StartAnimation()
         {
             ResetAnimation();
 
-            //TODO: Should animation be done via Mecanim? Or scripted?
-            StartCoroutine(TempAnimation());
-        }
-
-        private IEnumerator TempAnimation()
-        {
-            MessageRect.gameObject.SetActive(true);
-
-            yield return new WaitForSecondsRealtime(1.5f);
-
-            MessageRect.gameObject.SetActive(false);
-            DialogRect.gameObject.SetActive(true);
-            DialogCG.interactable = true;
-
-            yield return new WaitForSecondsRealtime(3.0f);
-
-            ResetAnimation();
+            NewBombersAnimator.SetTrigger(PLAY_ANIMATION);
         }
 
         public void OnDitchAndSwitchButton()

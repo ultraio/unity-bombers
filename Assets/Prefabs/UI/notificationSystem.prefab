@@ -326,7 +326,7 @@ GameObject:
   - component: {fileID: 1832319903383670544}
   - component: {fileID: 8607104438943213440}
   m_Layer: 0
-  m_Name: NewBomberImage
+  m_Name: DialogImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -497,6 +497,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8079509036768084682}
   - component: {fileID: 2164515459686760116}
+  - component: {fileID: 3238646034181380763}
   m_Layer: 0
   m_Name: notificationSystem
   m_TagString: Untagged
@@ -537,14 +538,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40266f0bc90c0b0438aa96dfa8ac3848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MessageRect: {fileID: 2993686979030073885}
-  MessageCG: {fileID: 2993686979030073884}
+  NewBombersAnimator: {fileID: 3238646034181380763}
+  Canvas: {fileID: 2164515459077293198}
   MessageImage: {fileID: 2993686979132157585}
-  DialogRect: {fileID: 1832319902046498669}
-  DialogCG: {fileID: 1832319902046498668}
   DialogImage: {fileID: 1832319903383670544}
   DialogMessageText: {fileID: 2219227401501101288}
   DialogButton: {fileID: 2512808095855320436}
+--- !u!95 &3238646034181380763
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2164515459686760118}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c8b63c695f374455aafc5f36a58c1a3f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &2164515460225198206
 GameObject:
   m_ObjectHideFlags: 0
@@ -707,8 +726,8 @@ CanvasGroup:
   m_GameObject: {fileID: 2993686979030073886}
   m_Enabled: 1
   m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!1 &2993686979132157587
 GameObject:
@@ -722,7 +741,7 @@ GameObject:
   - component: {fileID: 2993686979132157584}
   - component: {fileID: 2993686979132157585}
   m_Layer: 0
-  m_Name: NewBomberImage
+  m_Name: MessageImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -770,7 +789,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -847,7 +866,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1053,32 +1072,67 @@ PrefabInstance:
     - target: {fileID: 3126084763637658073, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3126084763637658073, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3126084763637658073, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 102.7
       objectReference: {fileID: 0}
     - target: {fileID: 3126084763637658073, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 18.63
       objectReference: {fileID: 0}
     - target: {fileID: 3126084763637658073, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 51.35
       objectReference: {fileID: 0}
     - target: {fileID: 3126084763637658073, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: -9.315
+      objectReference: {fileID: 0}
+    - target: {fileID: 5633921433304409038, guid: 3b57fd582c72f2a479264597aca31ef2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5633921433304409038, guid: 3b57fd582c72f2a479264597aca31ef2,
+        type: 3}
+      propertyPath: m_Color.a
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5633921433304409038, guid: 3b57fd582c72f2a479264597aca31ef2,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5633921433304409038, guid: 3b57fd582c72f2a479264597aca31ef2,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5633921433304409038, guid: 3b57fd582c72f2a479264597aca31ef2,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5633921433304409038, guid: 3b57fd582c72f2a479264597aca31ef2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6642836092916853565, guid: 3b57fd582c72f2a479264597aca31ef2,
+        type: 3}
+      propertyPath: m_Name
+      value: DitchSwitchText
       objectReference: {fileID: 0}
     - target: {fileID: 8947590470592178456, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
