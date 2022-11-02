@@ -52,8 +52,10 @@ namespace BrainCloudUNETExample
             OnActivateClickedAction?.Invoke(planeData.planeID);
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
+
             ActivateButton.onClick.RemoveAllListeners();
             OnActivateClickedAction = null;
         }
