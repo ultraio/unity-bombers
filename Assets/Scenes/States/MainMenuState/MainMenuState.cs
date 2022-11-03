@@ -597,7 +597,9 @@ namespace BrainCloudUNETExample
         private Image m_statsImage = null;
         private void OnUpdateStats()
         {
-            if (m_statsPanelContentLeft != null)
+            if (m_statsPanelContentLeft != null &&
+                BrainCloudStats.Instance.m_playerLevelTitles != null &&
+                BrainCloudStats.Instance.m_playerLevelTitles.Length > 0)
             {
                 // clear all stats
                 for (int i = 0; i < m_statsPanelContentLeft.transform.childCount; ++i)
