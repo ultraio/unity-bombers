@@ -506,7 +506,6 @@ namespace BrainCloudUNETExample.Game
             }
             m_leftBounds = false;
             m_playerPlane.m_health = 0;
-
             m_gMan.RpcDestroyPlayerPlane(NetId, -1);
         }
 

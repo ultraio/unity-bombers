@@ -1017,6 +1017,27 @@ namespace BrainCloudUNETExample
                             }
                         }
                         break;
+                    case BaseNetworkBehavior.SKIN_CHANGE:
+                        {
+                            GameObject gManObj = GameObject.Find("GameManager");
+                            GameManager gMan = gManObj != null ? gManObj.GetComponent<GameManager>() : null;
+
+                            if (gManObj == null)
+                            {
+                                GCore.Wrapper.Client.RelayService.DeregisterRelayCallback();
+                                GCore.Wrapper.Client.RelayService.DeregisterSystemCallback();
+                                return;
+                            }
+
+                            if (jsonMessage.ContainsKey(BaseNetworkBehavior.NET_ID))
+                            {
+                                short netId = Convert.ToInt16(jsonMessage[BaseNetworkBehavior.NET_ID]);
+                                short data = Convert.ToInt16(jsonMessage[BaseNetworkBehavior.DATA]);
+
+                                gMan.RpcSwitchPlayerSkin(netId, data);
+                            }
+                        }
+                        break;
                 }
             }
         }

@@ -32,7 +32,7 @@ namespace Gameframework
         //lazy loading GameManager
         //TODO: GameManager might be better as a singleton 
         private GameManager m_gMan;
-        private int m_newPlaneSkin = 0;
+        private int m_newPlaneSkin = -1;
 
         private void Start()
         {
@@ -49,16 +49,23 @@ namespace Gameframework
             GCore.Wrapper.RTTService.DeregisterRTTBlockchainItemEvent();
         }
 
-#if UNITY_EDITOR
+
         private void Update()
         {
+#if UNITY_EDITOR
             //Test blockchain event
             if (Input.GetKeyDown(KeyCode.K))
             {
                 OnBlockchainItemEvent(BlockchainTestData);
             }
-        }
 #endif
+            if (Input.GetKeyDown(KeyCode.B))
+            {
+                //ditch and switch
+                OnDitchAndSwitchButton();
+            }
+        }
+
         private void OnBlockchainItemEvent(string in_message)
         {
             if (string.IsNullOrEmpty(in_message)) return;
