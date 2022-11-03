@@ -12,6 +12,7 @@ using UnityEngine.UI;
 using BrainCloudUNETExample.Connection;
 using Gameframework;
 using TMPro;
+using BrainCloud.LitJson;
 
 namespace BrainCloudUNETExample.Game
 {
@@ -1793,6 +1794,66 @@ namespace BrainCloudUNETExample.Game
         }
 
         //[Command]
+        public void CmdSwitchPlayerSkin(short aPlayer, short newSkinID)
+        {
+            if (aPlayer == BombersNetworkManager.LocalPlayer.NetId)
+            {
+                //if its the local player update the singleton representing skin choice
+                //get the singleton version first 
+                GCore.Wrapper.EntityService.GetSingleton("PlaneSkin", (string responseData, object cbObject) =>
+                {
+                    JsonData jsonData = JsonMapper.ToObject(responseData);
+                    JsonData entry = jsonData["data"];
+
+                    if (entry != null)
+                    {
+                        int latestVersion = int.Parse(jsonData["data"]["version"].ToString());
+                        Dictionary<string, object> skinData = new Dictionary<string, object>
+                        {
+                            {GBomberRTTConfigManager.PLANE_SKIN_ID, newSkinID}
+                        };
+
+                        JsonData skinJsonData = JsonMapper.ToJson(skinData);
+
+                        Dictionary<string, object> aclData = new Dictionary<string, object>
+                        {
+                            {"other", 1 }
+                        };
+                        JsonData aclJson = JsonMapper.ToJson(aclData);
+                        GCore.Wrapper.EntityService.UpdateSingleton("PlaneSkin", skinJsonData.ToString(), aclJson.ToString(), latestVersion);
+                    }
+                });
+            }
+
+            RpcSwitchPlayerSkin(aPlayer, newSkinID);
+            SendSkinChange(aPlayer, newSkinID);
+        }
+
+        //[ClientRpc]
+        public void RpcSwitchPlayerSkin(short aPlayer, short newSkinID)
+        {
+            //find the plane who is switching skins
+            BombersPlayerController playerController = BombersNetworkManager.LocalPlayer;
+            if(aPlayer == playerController.NetId)
+            {
+                //avoid looping other players if it's local player changing skins
+                playerController.m_playerPlane.SetPlaneSkin(newSkinID);
+                playerController.SuicidePlayer();
+            }
+            else
+            {
+                foreach (LobbyMemberInfo member in BombersNetworkManager.LobbyInfo.Members)
+                {
+                    if (member.PlayerController.NetId == aPlayer)
+                    {
+                        member.PlayerController.m_playerPlane.SetPlaneSkin(newSkinID);
+                        member.PlayerController.SuicidePlayer();
+                    }
+                }
+            }
+        }
+
+        //[Command]
         public void CmdDeleteBomb(string aBombInfo, int aHitSurface)
         {
             BombInfo aBombInfo2 = BombInfo.GetBombInfo(aBombInfo);
@@ -1880,6 +1941,12 @@ namespace BrainCloudUNETExample.Game
             }
         }
 
+        public void DitchAndSwitchPlaneSkin(int newSkinID)
+        {
+            short playerID = BombersNetworkManager.LocalPlayer.NetId;
+            CmdSwitchPlayerSkin(playerID, (short)newSkinID);
+        }
+
         //[ClientRpc]
         public void RpcDestroyPlayerPlane(short aVictim, short aShooter)
         {
@@ -1899,14 +1966,17 @@ namespace BrainCloudUNETExample.Game
                 if (IsServer)
                 {
                     // spawn a bomb pick up at this location and all the other bombs
-                    Vector3 position = tempController.m_playerPlane.transform.position;
-                    int bombs = tempController.WeaponController.GetBombs();
-                    CmdSpawnBombPickup(position);
-                    for (int i = 0; i < bombs; i++)
+                    // only do this if plane was shot by valid shooter
+                    if(aShooter != -1)
                     {
+                        Vector3 position = tempController.m_playerPlane.transform.position;
+                        int bombs = tempController.WeaponController.GetBombs();
                         CmdSpawnBombPickup(position);
+                        for (int i = 0; i < bombs; i++)
+                        {
+                            CmdSpawnBombPickup(position);
+                        }
                     }
-
                     // send destroyed!
                     SendDestroy(BombersNetworkManager.PLANE_CONTROLLER, aVictim, aShooter);
                 }

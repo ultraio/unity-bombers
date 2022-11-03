@@ -62,6 +62,16 @@ namespace Gameframework
             SendStart(in_classtype, in_netId, in_data, in_transform, Vector3.zero);
         }
 
+        public static void SendSkinChange(short in_netId, short in_data)
+        {
+            Dictionary<string, object> json = new Dictionary<string, object>();
+            json[OPERATION] = SKIN_CHANGE;
+            json[NET_ID] = in_netId;
+            json[DATA] = in_data;
+
+            SendStringData(SerializeDict(json, '=', ';'), BrainCloud.BrainCloudRelay.TO_ALL_PLAYERS, true, true);
+        }
+
         public static void SendProjectileStart(string in_classtype, Dictionary<string, object> in_dict)
         {
             in_dict[OPERATION] = ENTITY_START;
@@ -449,6 +459,7 @@ namespace Gameframework
 
         public const string TRANSFORM_UPDATE = "tx";
         public const string LAST_PING = "lp";
+        public const string SKIN_CHANGE = "sc";
         public const string ENTITY_START = "es";
         public const string ENTITY_DESTROY = "ed";
 

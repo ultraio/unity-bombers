@@ -17,6 +17,9 @@ namespace BrainCloudUNETExample
         public static string STATE_NAME = "mainMenuState";
 
         [SerializeField]
+        private string TestBlockchainData;
+
+        [SerializeField]
         private PlayerRankIcon PlayerRankIcon = null;
 
         [SerializeField]
@@ -160,8 +163,8 @@ namespace BrainCloudUNETExample
                 GEventManager.StopListening(GEventManager.ON_REFUSED_INVITE_FRIEND, OnRefusedInviteFriend);
                 GEventManager.StopListening(GEventManager.ON_RTT_ENABLED, OnEnableRTTSuccess);
                 GEventManager.StopListening(GEventManager.ON_PLAYER_DATA_UPDATED, OnUpdateStats);
+                GCore.Wrapper.RTTService.DeregisterRTTBlockchainItemEvent();
                 (BombersNetworkManager.singleton as BombersNetworkManager).DisconnectGlobalChat();
-                GCore.Wrapper.RTTService.DeregisterRTTBlockchainRefresh();
             }
             ChatInputField.onEndEdit.RemoveListener(delegate { OnEndEditHelper(); });
 
@@ -172,7 +175,7 @@ namespace BrainCloudUNETExample
         private void OnEnableRTTSuccess()
         {
             GCore.Wrapper.RTTService.RegisterRTTPresenceCallback(OnPresenceCallback);
-            GCore.Wrapper.RTTService.RegisterRTTBlockchainRefresh(OnBlockchainRefresh);
+            GCore.Wrapper.RTTService.RegisterRTTBlockchainItemEvent(OnBlockchainItemEvent);
             GCore.Wrapper.Client.PresenceService.RegisterListenersForFriends(platform, true, presenceSuccess);
             OnUpdateStats();
         }
@@ -187,6 +190,14 @@ namespace BrainCloudUNETExample
         #region Public
         public void Update()
         {
+#if UNITY_EDITOR
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                //test blockchain item event call
+                OnBlockchainItemEvent(TestBlockchainData);
+            }
+#endif
+
 #if !UNITY_WEBGL
             if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -533,6 +544,8 @@ namespace BrainCloudUNETExample
 
         public void OpenHangar()
         {
+            m_newBlockchainItems = 0;
+            StoreBadgeText.text = "0";
             StoreBadge.SetActive(false);
             GStateManager.Instance.PushSubState(HangarSubState.STATE_NAME);
         }
@@ -620,16 +633,21 @@ namespace BrainCloudUNETExample
                     PlayerRankIcon.UpdateIcon(GPlayerMgr.Instance.PlayerData.PlayerRank);
                 }
 
-                string rank = BrainCloudStats.Instance.m_playerLevelTitles[0] + "(" + GPlayerMgr.Instance.PlayerData.PlayerXPData.CurrentLevel + ")";
+                string rank = String.Empty;
 
-                if (currentLevel > 0 && currentLevel < BrainCloudStats.Instance.m_playerLevelTitles.Length)
+                if (BrainCloudStats.Instance.m_playerLevelTitles.Length > 0)
                 {
-                    rank = BrainCloudStats.Instance.m_playerLevelTitles[currentLevel - 1] + " (" + currentLevel + ")";
-                }
-                // over max
-                else if (currentLevel > 0)
-                {
-                    rank = BrainCloudStats.Instance.m_playerLevelTitles[BrainCloudStats.Instance.m_playerLevelTitles.Length - 1] + " (" + currentLevel + ")";
+                    rank = BrainCloudStats.Instance.m_playerLevelTitles[0] + "(" + GPlayerMgr.Instance.PlayerData.PlayerXPData.CurrentLevel + ")";
+
+                    if (currentLevel > 0 && currentLevel < BrainCloudStats.Instance.m_playerLevelTitles.Length)
+                    {
+                        rank = BrainCloudStats.Instance.m_playerLevelTitles[currentLevel - 1] + " (" + currentLevel + ")";
+                    }
+                    // over max
+                    else if (currentLevel > 0)
+                    {
+                        rank = BrainCloudStats.Instance.m_playerLevelTitles[BrainCloudStats.Instance.m_playerLevelTitles.Length - 1] + " (" + currentLevel + ")";
+                    }
                 }
 
                 if (m_statsImage == null)
@@ -758,14 +776,66 @@ namespace BrainCloudUNETExample
             OnGetPresenceOfFriendsSuccess("", null);
         }
 
-        private void OnBlockchainRefresh(string in_message)
+        private void OnBlockchainItemEvent(string in_message)
         {
             Dictionary<string, object> jsonMessage = (Dictionary<string, object>)JsonReader.Deserialize(in_message);
+            Dictionary<string, object> jsonData = (Dictionary<string, object>)jsonMessage[BrainCloudConsts.JSON_DATA];
+            Dictionary<string, object> newItemJSON = (Dictionary<string, object>)jsonData["newJSON"];
+            Dictionary<string, object> newItemData = (Dictionary<string, object>)newItemJSON["object"];
+
+            int newItemFactoryID = (int)newItemData["token_factory_id"];
+
+            string suppressDuplicatesStr = GConfigManager.GetStringValue("suppressDuplicateBomberSkins");
+            bool suppressDuplicates = false;
+            bool.TryParse(suppressDuplicatesStr, out suppressDuplicates);
+
             switch (jsonMessage["operation"] as string)
             {
-                case "BOMBER_AVAILABLE": // TODO: Get proper Json operation
-                    // TODO: Need to update notification badge; probably store count on player?
-                    StoreBadge.SetActive(true);
+                case "ITEM_EVENT":
+                    if (jsonData["operation"] as string == "INS") {
+                        //only looking for INSERT events to show that there is a new item
+
+                        //check if user already owns this item
+                        if (suppressDuplicates)
+                        {
+                            GCore.Wrapper.Client.Blockchain.GetBlockchainItems("default", "{}", (response, cbObject) =>
+                            {
+                                bool itemExists = false;
+
+                                Dictionary<string, object> blockChainJsonMessage = (Dictionary<string, object>)JsonReader.Deserialize(response);
+                                Dictionary<string, object> blockchainData = (Dictionary<string, object>)blockChainJsonMessage[BrainCloudConsts.JSON_DATA];
+                                Dictionary<string, object> blockchainResponse = (Dictionary<string, object>)blockchainData[BrainCloudConsts.JSON_RESPONSE];
+                                object[] blockchainItems = (object[])blockchainResponse["items"];
+                                for(int i = 0; i < blockchainItems.Length; i++)
+                                {
+                                    Dictionary<string, object> itemData = (Dictionary<string, object>)blockchainItems[i];
+                                    Dictionary<string, object> itemDetails = (Dictionary<string, object>)itemData["json"];
+                                    int factoryID = (int)itemDetails["token_factory_id"];
+
+                                    if(factoryID == newItemFactoryID)
+                                    {
+                                        itemExists = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!itemExists)
+                                {
+                                    m_newBlockchainItems++;
+                                    StoreBadgeText.text = m_newBlockchainItems.ToString();
+                                    StoreBadge.SetActive(true);
+                                }
+
+                            });
+                        }
+                        else
+                        {
+                            m_newBlockchainItems++;
+                            StoreBadgeText.text = m_newBlockchainItems.ToString();
+                            StoreBadge.SetActive(true);
+                        }
+                    }
+
                     return;
                 default:
                     Debug.Log("(Blockchain Refresh received - NEED TO SHOW MESSAGE)");
@@ -877,6 +947,7 @@ namespace BrainCloudUNETExample
         private TMP_InputField m_inputField = null;
         private int MIN_CHARACTERS_NAME = 3;
         private int MAX_CHARACTERS_NAME = 16;
+        private int m_newBlockchainItems = 0;
 
         private GameObject m_statText = null;
         private GameObject m_statValue = null;

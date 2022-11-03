@@ -18,17 +18,29 @@ namespace BrainCloudUNETExample
         public GameObject UpperBG = null;
         public GameObject ActivatedLabel = null;
         public PlaneScriptableObject planeData;
+        public GameObject ItemCountBox = null;
+        public TextMeshProUGUI ItemCountText = null;
 
         public Action<int> OnActivateClickedAction;
 
         #region public
-        public void LateInit(PlaneScriptableObject in_data)
+        public void LateInit(PlaneScriptableObject in_data, int count)
         {
             planeData = in_data;
 
             Title.text = planeData.planeName;
             Description.text = planeData.planeDescription;
 
+            if(count > 1)
+            {
+                ItemCountBox.SetActive(true);
+                ItemCountText.text = count.ToString();
+            }
+            else
+            {
+                ItemCountBox.SetActive(false);
+                ItemCountText.text = String.Empty;
+            }
 
             if (UpperImage != null) UpperImage.sprite = planeData.planeThumbnail_green;
             if (UpperBG != null) UpperBG.SetActive(true);
