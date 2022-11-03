@@ -27,6 +27,10 @@ namespace BrainCloudUNETExample
             // get placeholder items for now
             List<PlaneScriptableObject> planeData = new List<PlaneScriptableObject>();
 
+            string suppressDuplicatesStr = GConfigManager.GetStringValue("suppressDuplicateBomberSkins");
+            bool suppressDuplicates = false;
+            bool.TryParse(suppressDuplicatesStr, out suppressDuplicates);
+
             SuccessCallback successCB = (response, cbObject) =>
             {
                 Debug.Log("Got blockchain items: " + response);
@@ -72,7 +76,8 @@ namespace BrainCloudUNETExample
                     {
                         cardGO = GEntityFactory.Instance.CreateResourceAtPath("Prefabs/UI/HangarPlaneCard", content);
                         card = cardGO.GetComponent<HangarPlaneCard>();
-                        card.LateInit(planeDataEntry, kvp.Value);
+                        
+                        card.LateInit(planeDataEntry, suppressDuplicates ? 1 : kvp.Value);
                         card.OnActivateClickedAction += OnSetPlaneID;
                     }
                     else

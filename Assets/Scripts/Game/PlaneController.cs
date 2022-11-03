@@ -33,6 +33,7 @@ namespace BrainCloudUNETExample.Game
         }
 
         public Transform m_bulletSpawnPoint;
+        public Transform m_planeSkinContainer;
 
         public int m_health = 0;
         private GameObject m_gunCharge;
@@ -128,7 +129,6 @@ namespace BrainCloudUNETExample.Game
             //Set skin
             SetPlaneSkin();
 
-
             m_gunCharge = transform.FindDeepChild("GunCharge").gameObject;
             m_gunCharge.GetComponent<Animator>().speed = 1 / GConfigManager.GetFloatValue("MultishotDelay");
             if (!PlayerController.IsLocalPlayer)
@@ -187,18 +187,17 @@ namespace BrainCloudUNETExample.Game
                 }
             }
 
-            Transform graphicPivot = transform.FindDeepChild("PlaneGraphic");
             //if plane graphic already exists remove it
-            if(graphicPivot.childCount > 0)
+            if(m_planeSkinContainer.childCount > 0)
             {
-                foreach(Transform t in graphicPivot)
+                foreach(Transform t in m_planeSkinContainer)
                 {
                     Destroy(t.gameObject);
                 }
             }
 
-            GameObject graphic = (GameObject)Instantiate(playerPlaneObject, graphicPivot.position, graphicPivot.rotation);
-            graphic.transform.parent = graphicPivot;
+            GameObject graphic = (GameObject)Instantiate(playerPlaneObject, m_planeSkinContainer.position, m_planeSkinContainer.rotation);
+            graphic.transform.SetParent(m_planeSkinContainer);
             graphic.transform.localPosition = Vector3.zero;
             graphic.transform.localRotation = Quaternion.identity;
 
@@ -220,6 +219,7 @@ namespace BrainCloudUNETExample.Game
         private const float SYNC_TRANSFORM_DELAY = 0.5f;
         void Update()
         {
+            
             // update contrails based of alive or dead
             if (m_leftContrail.gameObject != null) m_leftContrail.gameObject.SetActive(PlayerController.m_planeActive);
             if (m_rightContrail.gameObject != null) m_rightContrail.gameObject.SetActive(PlayerController.m_planeActive);
@@ -227,6 +227,11 @@ namespace BrainCloudUNETExample.Game
             ParticleSystem.MainModule rtContrail = m_rightContrail.main;
             ParticleSystem.MainModule ltContrail = m_leftContrail.main;
             SmartsComponent.transform.position = transform.position;
+
+            if (m_health <= 0)
+            {
+                return;
+            }
 
             switch (m_health)
             {

@@ -71,21 +71,71 @@ namespace Gameframework
                     if (jsonData["data"]["operation"].ToString() == "INS")
                     {
                         //only looking for INSERT events to show that there is a new item
-                        int factoryId = (int)jsonData["data"]["newJSON"]["object"]["token_factory_id"];
-                        //find plane skin data with this ID
-                        PlaneScriptableObject planeDataEntry = planeSkinsDataObjects.Where(x => x.planeID == factoryId).FirstOrDefault();
-                        if (planeDataEntry != null)
+                        int newItemFactoryID = (int)jsonData["data"]["newJSON"]["object"]["token_factory_id"];
+
+                        string suppressDuplicatesStr = GConfigManager.GetStringValue("suppressDuplicateBomberSkins");
+                        bool suppressDuplicates = false;
+                        bool.TryParse(suppressDuplicatesStr, out suppressDuplicates);
+
+                        if (suppressDuplicates)
                         {
-                            m_newPlaneSkin = factoryId;
-                            MessageImage.sprite = planeDataEntry.planeThumbnail_green;
-                            DialogImage.sprite = planeDataEntry.planeThumbnail_green;
-                            DialogMessageText.text = "New Bomber Available!";
-                            DialogButton.gameObject.SetActive(true);
-                            StartAnimation();
+                            //check if user already owns this new skin
+                            GCore.Wrapper.Client.Blockchain.GetBlockchainItems("default", "{}", (response, cbObject) =>
+                            {
+                                bool itemExists = false;
+
+                                JsonData blockchainData = JsonMapper.ToObject(response);
+                                JsonData items = blockchainData["data"]["response"]["items"];
+
+                                for (int i = 0; i < items.Count; i++)
+                                {
+                                    int factoryID = int.Parse(items[i]["json"]["token_factory_id"].ToString());
+
+                                    if (factoryID == newItemFactoryID)
+                                    {
+                                        itemExists = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!itemExists)
+                                {
+                                    //find plane skin data with this ID
+                                    PlaneScriptableObject planeDataEntry = planeSkinsDataObjects.Where(x => x.planeID == newItemFactoryID).FirstOrDefault();
+                                    if (planeDataEntry != null)
+                                    {
+                                        m_newPlaneSkin = newItemFactoryID;
+                                        MessageImage.sprite = planeDataEntry.planeThumbnail_green;
+                                        DialogImage.sprite = planeDataEntry.planeThumbnail_green;
+                                        DialogMessageText.text = "New Bomber Available!";
+                                        DialogButton.gameObject.SetActive(true);
+                                        StartAnimation();
+                                    }
+                                    else
+                                    {
+                                        Debug.Log("Couldn't find plane skin data with ID: " + newItemFactoryID);
+                                    }
+                                }
+
+                            });
                         }
                         else
                         {
-                            Debug.Log("Couldn't find plane skin data with ID: " + factoryId);
+                            //find plane skin data with this ID
+                            PlaneScriptableObject planeDataEntry = planeSkinsDataObjects.Where(x => x.planeID == newItemFactoryID).FirstOrDefault();
+                            if (planeDataEntry != null)
+                            {
+                                m_newPlaneSkin = newItemFactoryID;
+                                MessageImage.sprite = planeDataEntry.planeThumbnail_green;
+                                DialogImage.sprite = planeDataEntry.planeThumbnail_green;
+                                DialogMessageText.text = "New Bomber Available!";
+                                DialogButton.gameObject.SetActive(true);
+                                StartAnimation();
+                            }
+                            else
+                            {
+                                Debug.Log("Couldn't find plane skin data with ID: " + newItemFactoryID);
+                            }
                         }
                     }
                     return;
