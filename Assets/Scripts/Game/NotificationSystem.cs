@@ -33,6 +33,7 @@ namespace Gameframework
         //TODO: GameManager might be better as a singleton 
         private GameManager m_gMan;
         private int m_newPlaneSkin = -1;
+        private bool canSwitchPlanes = false;
 
         private void Start()
         {
@@ -156,17 +157,20 @@ namespace Gameframework
         {
             NewBombersAnimator.SetTrigger(RESET_ANIMATION);
             NewBombersAnimator.ResetTrigger(PLAY_ANIMATION);
+            canSwitchPlanes = false;
         }
 
         private void StartAnimation()
         {
             ResetAnimation();
-
+            canSwitchPlanes = true;
             NewBombersAnimator.SetTrigger(PLAY_ANIMATION);
         }
 
         public void OnDitchAndSwitchButton()
         {
+            if (!canSwitchPlanes) return;
+
             ResetAnimation();
             //disable button 
             DialogButton.gameObject.SetActive(false);
@@ -174,6 +178,12 @@ namespace Gameframework
             m_gMan.DitchAndSwitchPlaneSkin(m_newPlaneSkin);
 
             Debug.Log("Ditching & Switching...");
+        }
+
+        //Gets called by an animation event when the notification disappears
+        public void DisablePlaneSwitching()
+        {
+            canSwitchPlanes = false;
         }
     }
 }
