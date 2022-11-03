@@ -135,7 +135,7 @@ namespace BrainCloudUNETExample
             if (m_lastAuthType == AuthenticationType.Ultra)
             {
                 GPlayerMgr.Instance.PlayerData.UniversalId = Ultraio.Ultra.Client.Username;
-                GCore.Wrapper.Client.PlayerStateService.UpdateUserName(Ultraio.Ultra.Client.Username);
+                GCore.Wrapper.Client.PlayerStateService.UpdateName(Ultraio.Ultra.Client.Username);
             }
             GCore.Instance.ProcessRetryQueue();
             onCompleteConnectingSubState();
@@ -270,9 +270,11 @@ namespace BrainCloudUNETExample
 
 
         #endregion
+#pragma warning disable IDE0044, IDE0051, IDE0052 // Remove unused private members
         private int MIN_CHARACTERS = 3;
         private int MAX_CHARACTERS = 25;
         private AuthenticationType m_lastAuthType = AuthenticationType.Anonymous;
         private AuthenticationType m_defaultAuthType = AuthenticationType.Universal;
+#pragma warning restore IDE0044, IDE0051, IDE0052 // Remove unused private members
     }
 }
