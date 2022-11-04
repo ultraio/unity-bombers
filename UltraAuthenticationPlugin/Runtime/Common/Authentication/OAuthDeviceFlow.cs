@@ -83,8 +83,15 @@ namespace Ultraio
 
         private void OpenVerificationDeepLink(string verificationUri)
         {
-            string prefix = _useBrowser ? string.Empty : DeepLinkConstants.Protocol;
-            System.Diagnostics.Process.Start(prefix + verificationUri);
+            if (_useBrowser)
+            {
+                Application.OpenURL(verificationUri);
+            }
+            else
+            {
+                System.Diagnostics.Process.Start(DeepLinkConstants.Protocol + verificationUri);
+            }
+            
         }
 
         private async Task<DeviceInfo> GetDeviceInfo()
