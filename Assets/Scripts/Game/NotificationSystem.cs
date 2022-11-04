@@ -27,6 +27,7 @@ namespace Gameframework
         [SerializeField] private TextMeshProUGUI DialogMessageText = null;
         [SerializeField] private GameObject DialogButton = null;
 
+        [Header("Editor Only")]
         [SerializeField] private string BlockchainTestData = null;
 
         //lazy loading GameManager
@@ -116,7 +117,7 @@ namespace Gameframework
                                         MessageImage.sprite = planeDataEntry.planeThumbnail_green;
                                         DialogImage.sprite = planeDataEntry.planeThumbnail_green;
                                         DialogMessageText.text = "New Bomber Available!";
-                                        DialogButton.gameObject.SetActive(true);
+
                                         StartAnimation();
                                     }
                                     else
@@ -137,7 +138,7 @@ namespace Gameframework
                                 MessageImage.sprite = planeDataEntry.planeThumbnail_green;
                                 DialogImage.sprite = planeDataEntry.planeThumbnail_green;
                                 DialogMessageText.text = "New Bomber Available!";
-                                DialogButton.gameObject.SetActive(true);
+
                                 StartAnimation();
                             }
                             else
@@ -172,12 +173,10 @@ namespace Gameframework
             if (!canSwitchPlanes) return;
 
             ResetAnimation();
-            //disable button 
-            DialogButton.gameObject.SetActive(false);
 
             m_gMan.DitchAndSwitchPlaneSkin(m_newPlaneSkin);
 
-            Debug.Log("Ditching & Switching...");
+            Debug.Log($"Swapping to Plane Skin ID: {m_newPlaneSkin}");
         }
 
         //Gets called by an animation event when the notification disappears

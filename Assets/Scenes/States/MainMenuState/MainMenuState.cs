@@ -234,7 +234,8 @@ namespace BrainCloudUNETExample
             QuitMenu.SetActive(false);
         }
 
-        public void EditName()
+        // Stubbing out ability to edit name
+        /*public void EditName()
         {
             m_inputField.interactable = true;
             m_inputField.ActivateInputField();
@@ -251,7 +252,7 @@ namespace BrainCloudUNETExample
                 ValidateName();
             else
                 ConnectingSubState.PushConnectingSubState("You need a UniversalId for this, please create one now.", "Create");
-        }
+        }*/
 
         public void RestoreName()
         {
