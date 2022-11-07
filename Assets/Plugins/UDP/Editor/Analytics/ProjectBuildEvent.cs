@@ -6,7 +6,7 @@ namespace UnityEngine.UDP.Editor.Analytics
 {
     public static class ProjectBuildEvent
     {
-        [PostProcessBuildAttribute(0)]
+        [PostProcessBuildAttribute]
         public static void OnPostProcessBuild(BuildTarget target, string pathToBuildProject)
         {
             if (target == BuildTarget.Android)

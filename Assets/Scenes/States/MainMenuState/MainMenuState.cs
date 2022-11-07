@@ -198,7 +198,7 @@ namespace BrainCloudUNETExample
             }
 #endif
 
-#if !UNITY_WEBGL
+#if UNITY_EDITOR || UNITY_STANDALONE
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 QuitMenu.SetActive(true);
@@ -224,7 +224,7 @@ namespace BrainCloudUNETExample
         {
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
-#elif STEAMWORKS_ENABLED
+#elif UNITY_STANDALONE || STEAMWORKS_ENABLED
             Application.Quit();
 #endif
         }
