@@ -14,7 +14,7 @@ namespace Gameframework
         public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
         {
             switch(target)
-		    {
+            {
                 case BuildTarget.StandaloneOSX:
                     try
                     {
