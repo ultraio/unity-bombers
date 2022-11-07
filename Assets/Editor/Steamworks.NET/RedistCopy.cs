@@ -20,7 +20,7 @@ using Steamworks;
 using System.IO;
 
 public class RedistCopy {
-	[PostProcessBuild]
+	[PostProcessBuildAttribute(1)]
 	public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject) {
 		string baseDir;
 		string pluginsDir;
@@ -87,6 +87,14 @@ public class RedistCopy {
 				Debug.LogWarning("[Steamworks.NET] Could not copy controller.vdf into the built project. File.Copy() Failed. Place controller.vdf from the Steamworks SDK in the output dir manually.");
 			}
 		}
+#endif
+
+#if UNITY_STANDALONE_OSX
+			string bundlePath = Path.Combine(Application.dataPath, "Contents/PlugIns/ModifiedBundle.bundle");
+			string appPath = Path.GetDirectoryName(Application.dataPath);
+
+			UnityEditor.OSXStandalone.MacOSCodeSigning.CodeSignAppBundle(bundlePath);
+			UnityEditor.OSXStandalone.MacOSCodeSigning.CodeSignAppBundle(appPath);
 #endif
 	}
 
