@@ -15,7 +15,6 @@ public class JenkinsBuild {
     {
         var args = FindArgs();
         args.GetEnviroVariables();
-        args.targetDir = "/BombersRTT_Ultra_WebGL/";
         string fullPathAndName = args.targetDir + args.GetBuildFolderName();
         BuildProject(EnabledScenes, fullPathAndName, BuildTargetGroup.WebGL, BuildTarget.WebGL, BuildOptions.None);
     }
@@ -34,7 +33,6 @@ public class JenkinsBuild {
     {
         var args = FindArgs();
         args.GetEnviroVariables();
-        args.targetDir = "BombersRTT_Ultra_MacOS";
         string fullPathAndName = args.targetDir + args.GetBuildFolderName();
         BuildProject(EnabledScenes, fullPathAndName, BuildTargetGroup.iOS, BuildTarget.StandaloneOSX, BuildOptions.None);
     }
