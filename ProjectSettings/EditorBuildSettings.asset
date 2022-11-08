@@ -42,9 +42,6 @@ EditorBuildSettings:
     path: Assets/Scenes/SubStates/Lobby/lobby.unity
     guid: fb20425debc3d9c46afc34f5e13725a7
   - enabled: 1
-    path: Assets/Scenes/SubStates/Store/store.unity
-    guid: 0a4cc22a7433a2846b5120129776abfd
-  - enabled: 1
     path: Assets/Scenes/SubStates/ConfirmJoinLobby/confirmJoinLobby.unity
     guid: be2fedc23aec99245a224887d6e429ce
   - enabled: 1
