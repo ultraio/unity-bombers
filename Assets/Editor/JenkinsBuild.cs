@@ -25,7 +25,6 @@ public class JenkinsBuild {
     {
         var args = FindArgs();
         args.GetEnviroVariables();
-        args.targetDir = "BombersRTT_Ultra_WindowsStandalone";
         string fullPathAndName = args.targetDir + args.GetBuildFolderName();
         BuildProject(EnabledScenes, fullPathAndName, BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows, BuildOptions.None);
     }
