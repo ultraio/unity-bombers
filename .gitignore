@@ -95,5 +95,5 @@ Thumbs.db
 *.idea*
 */.idea/*
 *.lighting*
-BrainCloudSettings*
-BrainCloudEditorSettings*
+#BrainCloudSettings*
+#BrainCloudEditorSettings*
