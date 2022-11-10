@@ -127,13 +127,12 @@ public class JenkinsBuild {
         public string GetBuildFolderName()
         {
             GetEnviroVariables();
-            return $"BombersRTT_Internal_clientVersion.{BrainCloud.Version.GetVersion()}_buildNumber.{buildNumber}.exe";
+            return $"BombersRTT_Internal_clientVersion.{BrainCloud.Version.GetVersion()}.exe";
         }
         
         public void GetEnviroVariables()
         {
             targetDir = System.Environment.GetEnvironmentVariable("targetDirectory");
-            buildNumber = System.Environment.GetEnvironmentVariable("BUILD_NUMBER");
         }
     }
 }
