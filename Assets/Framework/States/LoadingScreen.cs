@@ -475,9 +475,9 @@ namespace Gameframework
         {
             string toReturn = "";
             int index = 0;
-            foreach (Char c in in_loadingLevel)
+            foreach (char c in in_loadingLevel)
             {
-                if (Char.IsUpper(c)) break;
+                if (char.IsUpper(c)) break;
                 index++;
             }
 

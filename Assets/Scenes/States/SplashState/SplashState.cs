@@ -74,7 +74,7 @@ namespace BrainCloudUNETExample
             if (!AssetBundleManager.SimulateAssetBundleInEditor)
 #endif
             {
-                AssetBundleLoadManifestOperation request = AssetBundles.AssetBundleManager.Initialize();
+                AssetBundleLoadManifestOperation request = AssetBundleManager.Initialize();
                 if (request != null)
                     yield return StartCoroutine(request);
 
@@ -91,20 +91,17 @@ namespace BrainCloudUNETExample
                 yield return YieldFactory.GetWaitForEndOfFrame();
             }
             GStateManager.Instance.EnableLoadingScreen(false);
-#endif
 
-            yield return StartCoroutine(loadCommonSounds());
+            GStateManager.Instance.ForcedUpdatedLoadingAssetBundle();
+
+            yield return StartCoroutine(GSoundMgr.Instance.LoadSoundConfigRoutine("commonsounds", "SoundConfig"));
+#endif
+            GStateManager.Instance.EnableLoadingScreen(false);
+
+            GStateManager.Instance.PushSubState(ConnectingSubState.STATE_NAME);
 
             yield return YieldFactory.GetWaitForEndOfFrame();
         }
         #endregion
-
-        private IEnumerator loadCommonSounds()
-        {
-            GStateManager.Instance.ForcedUpdatedLoadingAssetBundle();
-            yield return StartCoroutine(GSoundMgr.Instance.LoadSoundConfigRoutine("commonsounds", "SoundConfig"));
-            GStateManager.Instance.EnableLoadingScreen(false);
-            GStateManager.Instance.PushSubState(ConnectingSubState.STATE_NAME);
-        }
     }
 }
