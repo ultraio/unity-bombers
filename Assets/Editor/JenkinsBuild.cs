@@ -34,7 +34,7 @@ public class JenkinsBuild {
         var args = FindArgs();
         args.GetEnviroVariables();
         string fullPathAndName = args.targetDir + args.GetBuildFolderName();
-        BuildProject(EnabledScenes, fullPathAndName, BuildTargetGroup.Standalone, BuildTarget.StandaloneOSX, BuildOptions.Development);
+        BuildProject(EnabledScenes, fullPathAndName, BuildTargetGroup.Standalone, BuildTarget.StandaloneOSX, BuildOptions.None);
     }
     
     private static Args FindArgs()
