@@ -13,6 +13,8 @@ public class RemoteBuildSettings : MonoBehaviour
             PlayerPrefs.SetInt("IsRemoteBuild", 1);
             PlayerPrefs.SetString("AppID", appId);
             PlayerPrefs.SetString("AppSecret", appSecret);
+
+            Debug.Log($"Successfully set the appID and appSecret to: {appId} {appSecret}");
         }
     }
 
