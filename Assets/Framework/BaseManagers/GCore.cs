@@ -58,7 +58,26 @@ namespace Gameframework
                 GameObject go = new GameObject();
                 m_wrapper = go.AddComponent<BrainCloudWrapper>();
                 m_wrapper.WrapperName = "mainWrapper";
-                m_wrapper.InitWithApps();
+
+                if (PlayerPrefs.HasKey("IsRemoteBuild") && PlayerPrefs.GetInt("IsRemoteBuild") == 1)
+                {
+                    string AppId = PlayerPrefs.GetString("AppID");
+                    string AppSecret = PlayerPrefs.GetString("AppSecret");
+
+                    string ultraBCUrl = "api.qa.ultracloud.ultra.io";
+
+                    Dictionary<string,string> appSecretMap = new Dictionary<string,string>();
+
+                    appSecretMap.Add(AppId, AppSecret);
+
+                    m_wrapper.InitWithApps(ultraBCUrl, AppId, appSecretMap, "1.0");
+                }
+                else
+                {
+                    m_wrapper.InitWithApps();
+                }
+
+                
                 go.transform.SetParent(transform);
 
 #if BC_DEBUG_LOG_ENABLED
