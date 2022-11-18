@@ -59,11 +59,16 @@ namespace Gameframework
                 m_wrapper = go.AddComponent<BrainCloudWrapper>();
                 m_wrapper.WrapperName = "mainWrapper";
 
-                if (PlayerPrefs.HasKey("IsRemoteBuild") && PlayerPrefs.GetInt("IsRemoteBuild") == 1)
+                TextAsset bcsettings = Resources.Load<TextAsset>("BCSettings");
+
+
+                if (bcsettings != null)
                 {
-                    string AppId = PlayerPrefs.GetString("AppID");
-                    string AppSecret = PlayerPrefs.GetString("AppSecret");
-                    string authUrl = PlayerPrefs.GetString("AuthURL");
+                    string[] lines = bcsettings.text.Split('\n');
+
+                    string AppId = lines[1];
+                    string AppSecret = lines[2];
+                    string authUrl = lines[0];
 
                     Debug.Log("Got remote BrainCloud settings:");
                     Debug.Log($"URL: {authUrl} AppID: {AppId} Secret:{AppSecret}");

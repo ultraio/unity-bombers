@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using System.IO;
 
 public class RemoteBuildSettings : MonoBehaviour
 {
@@ -11,12 +12,20 @@ public class RemoteBuildSettings : MonoBehaviour
 
         if(!string.IsNullOrEmpty(appId) && !string.IsNullOrEmpty(appSecret))
         {
-            PlayerPrefs.SetInt("IsRemoteBuild", 1);
-            PlayerPrefs.SetString("AppID", appId);
-            PlayerPrefs.SetString("AppSecret", appSecret);
-            PlayerPrefs.SetString("AuthURL", appAuthUrl);
+            string path = "Assets/Resources/BCSettings.txt";
+            StreamWriter writer = new StreamWriter(path, true);
 
-            Debug.Log($"Successfully set the appID and appSecret to: {appId} {appSecret}");
+            writer.WriteLine(appAuthUrl);
+            writer.WriteLine(appId);
+            writer.WriteLine(appSecret);
+            writer.Close();
+
+            AssetDatabase.ImportAsset(path);
+
+            TextAsset bcsettings = Resources.Load<TextAsset>("BCSettings");
+
+
+            Debug.Log($"Successfully set the appID and appSecret to: {bcsettings}");
         }
     }
 
