@@ -7,12 +7,14 @@ public class RemoteBuildSettings : MonoBehaviour
     {
         string appId = GetArg("-appId");
         string appSecret = GetArg("-appSecret");
+        string appAuthUrl = GetArg("-url");
 
         if(!string.IsNullOrEmpty(appId) && !string.IsNullOrEmpty(appSecret))
         {
             PlayerPrefs.SetInt("IsRemoteBuild", 1);
             PlayerPrefs.SetString("AppID", appId);
             PlayerPrefs.SetString("AppSecret", appSecret);
+            PlayerPrefs.SetString("AuthURL", appAuthUrl);
 
             Debug.Log($"Successfully set the appID and appSecret to: {appId} {appSecret}");
         }
