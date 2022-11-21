@@ -28,6 +28,7 @@ namespace Gameframework
             public Resolution(int width, int height) { Width = width; Height = height; }
         }
 
+        private const int STANDARD  = 600;
         private const int HD_720P   = 720;
         private const int FHD_1080P = 1080;
         private const int QHD_1440P = 1440;
@@ -37,11 +38,12 @@ namespace Gameframework
 
         private static readonly List<int> ResolutionList = new List<int>
         {
-            HD_720P, FHD_1080P, QHD_1440P, UHD_2160P, UHD_2880P, UHD_4320P
+            STANDARD, HD_720P, FHD_1080P, QHD_1440P, UHD_2160P, UHD_2880P, UHD_4320P
         };
 
         private static readonly Dictionary<int, Resolution> ResolutionConfigs = new Dictionary<int, Resolution>
         {
+            { STANDARD,  new Resolution(800, 600) },
             { HD_720P,   new Resolution(1280, 720) },  { FHD_1080P, new Resolution(1920, 1080) },
             { QHD_1440P, new Resolution(2560, 1440) }, { UHD_2160P, new Resolution(3840, 2160) },
             { UHD_2880P, new Resolution(5120, 2880) }, { UHD_4320P, new Resolution(7680, 4320) }
@@ -90,7 +92,11 @@ namespace Gameframework
             {
                 isFullScreen = true;
 
+#if !UNITY_STANDALONE_OSX
                 Screen.SetResolution(fullscreenConfig.Width, fullscreenConfig.Height, FullScreenMode.FullScreenWindow);
+#else
+                Screen.SetResolution(fullscreenConfig.Width, fullscreenConfig.Height, FullScreenMode.MaximizedWindow);
+#endif
 
                 Debug.Log($"Setting Windowed Resolution to: {fullscreenConfig.Width}x{fullscreenConfig.Height}");
             }
