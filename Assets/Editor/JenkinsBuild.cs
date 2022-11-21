@@ -32,9 +32,18 @@ public class JenkinsBuild {
     }
     
     // called from Jenkins
-    public static void BuildMacOS()
+    public static void BuildMacOSWithTextFile()
     {
         SetRemoteBuildSettings();
+        var args = FindArgs();
+        args.GetEnviroVariables();
+        string fullPathAndName = args.targetDir + args.GetBuildFolderName();
+        BuildProject(EnabledScenes, fullPathAndName, BuildTargetGroup.Standalone, BuildTarget.StandaloneOSX, BuildOptions.None);
+    }
+    
+    // called from Jenkins
+    public static void BuildMacOS()
+    {
         var args = FindArgs();
         args.GetEnviroVariables();
         string fullPathAndName = args.targetDir + args.GetBuildFolderName();
