@@ -13,7 +13,7 @@ namespace Gameframework
 {
     public class ScreenResolver : BaseBehaviour
     {
-        [SerializeField] private bool LaunchFullScreen = false;
+        [SerializeField] private bool LaunchAppInFullScreen = false;
 
 #if UNITY_EDITOR || !UNITY_STANDALONE
         private void Awake()
@@ -21,16 +21,15 @@ namespace Gameframework
             Destroy(gameObject);
         }
 #elif UNITY_STANDALONE // This should only run on Standalone devices
-
-        #region Static Helpers
-        private readonly struct Resolution
+        private readonly struct RenderSizes
         {
             public readonly int Width;
             public readonly int Height;
 
-            public Resolution(int width, int height) { Width = width; Height = height; }
+            public RenderSizes(int width, int height) { Width = width; Height = height; }
         }
 
+        #region Static Helpers
         private const int STANDARD  = 600;
         private const int HD_720P   = 720;
         private const int FHD_1080P = 1080;
@@ -44,25 +43,33 @@ namespace Gameframework
             STANDARD, HD_720P, FHD_1080P, QHD_1440P, UHD_2160P, UHD_2880P, UHD_4320P
         };
 
-        private static readonly Dictionary<int, Resolution> ResolutionConfigs = new Dictionary<int, Resolution>
+        private static readonly Dictionary<int, RenderSizes> ResolutionConfigs = new Dictionary<int, RenderSizes>
         {
-            { STANDARD,  new Resolution(800,  600) },
-            { HD_720P,   new Resolution(1280, 720) },  { FHD_1080P, new Resolution(1920, 1080) },
-            { QHD_1440P, new Resolution(2560, 1440) }, { UHD_2160P, new Resolution(3840, 2160) },
-            { UHD_2880P, new Resolution(5120, 2880) }, { UHD_4320P, new Resolution(7680, 4320) }
+            { STANDARD,  new RenderSizes(800,  600) },
+            { HD_720P,   new RenderSizes(1280, 720) },  { FHD_1080P, new RenderSizes(1920, 1080) },
+            { QHD_1440P, new RenderSizes(2560, 1440) }, { UHD_2160P, new RenderSizes(3840, 2160) },
+            { UHD_2880P, new RenderSizes(5120, 2880) }, { UHD_4320P, new RenderSizes(7680, 4320) }
         };
         #endregion
 
         private bool isFullScreen = false;
-        private Resolution windowedConfig;
-        private Resolution fullscreenConfig;
+        private RenderSizes windowedConfig;
+        private RenderSizes fullscreenConfig;
 
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
 
+            Resolution resolutions = Screen.resolutions[0];
+            foreach(Resolution supported in Screen.resolutions)
+            {
+                resolutions = resolutions.height < supported.height ? supported : resolutions;
+            }
+
+            Debug.Log($"Max Resolution: {resolutions.width}x{resolutions.height}");
+
             int windowed = ResolutionList[0]; int fullscreen = ResolutionList[0];
-            int screenHeight = Screen.currentResolution.height;
+            int screenHeight = Screen.resolutions[0].height;
             foreach (int resolution in ResolutionList)
             {
                 int compare = screenHeight - resolution;
@@ -76,8 +83,25 @@ namespace Gameframework
             windowedConfig = ResolutionConfigs[windowed];
             fullscreenConfig = ResolutionConfigs[fullscreen];
 
-            isFullScreen = !LaunchFullScreen;
-            Screen.fullScreen = LaunchFullScreen; // This will be resolved in the Update loop
+            if (LaunchAppInFullScreen)
+            {
+                isFullScreen = true;
+
+#if !UNITY_STANDALONE_OSX
+                Screen.SetResolution(fullscreenConfig.Width, fullscreenConfig.Height, FullScreenMode.FullScreenWindow);
+#else
+                Screen.SetResolution(fullscreenConfig.Width, fullscreenConfig.Height, FullScreenMode.MaximizedWindow);
+#endif
+                Debug.Log($"Setting Fullscreen Resolution to: {fullscreenConfig.Width}x{fullscreenConfig.Height}");
+            }
+            else
+            {
+                isFullScreen = false;
+
+                Screen.SetResolution(windowedConfig.Width, windowedConfig.Height, FullScreenMode.Windowed);
+
+                Debug.Log($"Setting Windowed Resolution to: {windowedConfig.Width}x{windowedConfig.Height}");
+            }
         }
 
         private void Update()
