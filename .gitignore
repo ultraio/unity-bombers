@@ -93,11 +93,11 @@ Thumbs.db
 
 # Misc Files
 *.log*
-*/[Ll]ogs/*
 *.idea*
 */.idea/*
 *.lighting*
-*/Resources/*
+/[Aa]ssets/[Bb]rain[Cc]loud/[Rr]esources/*
+/[Aa]ssets/[Bb]rain[Cc]loud/[Rr]esources.meta
 AssetBundleServer.exe*
 FacebookSettings*
 steam_appid.txt

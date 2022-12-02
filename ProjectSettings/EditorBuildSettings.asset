@@ -21,7 +21,7 @@ EditorBuildSettings:
     path: Assets/Scenes/SubStates/ConnectingSubState/connectingSubState.unity
     guid: dbd5a8c9a6b6672448484e9b1a54b9bd
   - enabled: 1
-    path: Assets/Framework/GenericMessage/genericMessageSubState.unity
+    path: Assets/Scenes/SubStates/GenericMessage/genericMessageSubState.unity
     guid: 45c6818da0baf3e4c8999346c21c6e24
   - enabled: 1
     path: Assets/Scenes/SubStates/JoiningGame/joiningGame.unity
