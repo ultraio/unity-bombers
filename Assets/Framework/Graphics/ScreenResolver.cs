@@ -69,14 +69,28 @@ namespace Gameframework
             Debug.Log($"Max Resolution: {resolutions.width}x{resolutions.height}");
 
             int windowed = ResolutionList[0]; int fullscreen = ResolutionList[0];
-            int screenHeight = Screen.resolutions[0].height;
+            int screenHeight = resolutions.height;
             foreach (int resolution in ResolutionList)
             {
                 int compare = screenHeight - resolution;
+                Debug.Log($"Comparing Screen Height: {screenHeight} with Resolution: {resolution}");
+
                 if (compare >= 0)
                 {
-                    windowed = resolution < screenHeight ? resolution : windowed;
-                    fullscreen = resolution <= screenHeight ? resolution : fullscreen;
+                    if (resolution < screenHeight)
+                    {
+                        windowed = resolution;
+                        Debug.Log($"Accepted Windowed Height: {windowed}");
+                    }
+
+                    if (resolution <= screenHeight)
+                    {
+                        fullscreen = resolution;
+                        Debug.Log($"Accepted Fullscreen Height: {fullscreen}");
+                    }
+
+                    //windowed = resolution < screenHeight ? resolution : windowed;
+                    //fullscreen = resolution <= screenHeight ? resolution : fullscreen;
                 }
             }
 
