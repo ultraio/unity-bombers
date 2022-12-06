@@ -6,6 +6,7 @@
  * Supported resolutions: 7680x4320 (8K), 5120x2880 (5K), 3840x2160 (4K), 2560x1440 (QHD), 1920x1080 (FHD), 1280x720 (HD), 800x600 (Standard, Default)
  */
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,13 +21,14 @@ namespace Gameframework
         {
             Destroy(gameObject);
         }
+
 #elif UNITY_STANDALONE // This should only run on Standalone devices
-        private readonly struct RenderSizes
+        private readonly struct ScreenConfigs
         {
             public readonly int Width;
             public readonly int Height;
 
-            public RenderSizes(int width, int height) { Width = width; Height = height; }
+            public ScreenConfigs(int width, int height) { Width = width; Height = height; }
         }
 
         #region Static Helpers
@@ -43,25 +45,35 @@ namespace Gameframework
             STANDARD, HD_720P, FHD_1080P, QHD_1440P, UHD_2160P, UHD_2880P, UHD_4320P
         };
 
-        private static readonly Dictionary<int, RenderSizes> ResolutionConfigs = new Dictionary<int, RenderSizes>
+        private static readonly Dictionary<int, ScreenConfigs> ResolutionConfigs = new Dictionary<int, ScreenConfigs>
         {
-            { STANDARD,  new RenderSizes(800,  600) },
-            { HD_720P,   new RenderSizes(1280, 720) },  { FHD_1080P, new RenderSizes(1920, 1080) },
-            { QHD_1440P, new RenderSizes(2560, 1440) }, { UHD_2160P, new RenderSizes(3840, 2160) },
-            { UHD_2880P, new RenderSizes(5120, 2880) }, { UHD_4320P, new RenderSizes(7680, 4320) }
+            { STANDARD,  new ScreenConfigs(800,  600) },
+            { HD_720P,   new ScreenConfigs(1280, 720) },  { FHD_1080P, new ScreenConfigs(1920, 1080) },
+            { QHD_1440P, new ScreenConfigs(2560, 1440) }, { UHD_2160P, new ScreenConfigs(3840, 2160) },
+            { UHD_2880P, new ScreenConfigs(5120, 2880) }, { UHD_4320P, new ScreenConfigs(7680, 4320) }
         };
         #endregion
 
         private bool isFullScreen = false;
-        private RenderSizes windowedConfig;
-        private RenderSizes fullscreenConfig;
+        private ScreenConfigs windowedConfig;
+        private ScreenConfigs fullscreenConfig;
 
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
+        }
+
+        private void Start()
+        {
+            StartCoroutine(ResolveScreenSize());
+        }
+
+        private IEnumerator ResolveScreenSize()
+        {
+            yield return null;
 
             Resolution resolutions = Screen.resolutions[0];
-            foreach(Resolution supported in Screen.resolutions)
+            foreach (Resolution supported in Screen.resolutions)
             {
                 resolutions = resolutions.height < supported.height ? supported : resolutions;
             }
@@ -77,20 +89,18 @@ namespace Gameframework
 
                 if (compare >= 0)
                 {
+                    windowed = resolution < screenHeight ? resolution : windowed;
+                    fullscreen = resolution <= screenHeight ? resolution : fullscreen;
+
                     if (resolution < screenHeight)
                     {
-                        windowed = resolution;
-                        Debug.Log($"Accepted Windowed Height: {windowed}");
+                        Debug.Log($"Updated Windowed Height: {windowed}");
                     }
 
                     if (resolution <= screenHeight)
                     {
-                        fullscreen = resolution;
-                        Debug.Log($"Accepted Fullscreen Height: {fullscreen}");
+                        Debug.Log($"Updated Fullscreen Height: {fullscreen}");
                     }
-
-                    //windowed = resolution < screenHeight ? resolution : windowed;
-                    //fullscreen = resolution <= screenHeight ? resolution : fullscreen;
                 }
             }
 
@@ -106,7 +116,7 @@ namespace Gameframework
 #else
                 Screen.SetResolution(fullscreenConfig.Width, fullscreenConfig.Height, FullScreenMode.MaximizedWindow);
 #endif
-                Debug.Log($"Setting Fullscreen Resolution to: {fullscreenConfig.Width}x{fullscreenConfig.Height}");
+                Debug.Log($"Setting game resolution to: {fullscreenConfig.Width}x{fullscreenConfig.Height} (Fullscreen)");
             }
             else
             {
@@ -114,7 +124,7 @@ namespace Gameframework
 
                 Screen.SetResolution(windowedConfig.Width, windowedConfig.Height, FullScreenMode.Windowed);
 
-                Debug.Log($"Setting Windowed Resolution to: {windowedConfig.Width}x{windowedConfig.Height}");
+                Debug.Log($"Setting game resolution to: {windowedConfig.Width}x{windowedConfig.Height} (Windowed)");
             }
         }
 
@@ -126,7 +136,7 @@ namespace Gameframework
 
                 Screen.SetResolution(windowedConfig.Width, windowedConfig.Height, FullScreenMode.Windowed);
 
-                Debug.Log($"Setting Windowed Resolution to: {windowedConfig.Width}x{windowedConfig.Height}");
+                Debug.Log($"Setting game resolution to: {windowedConfig.Width}x{windowedConfig.Height} (Windowed)");
             }
             else if (!isFullScreen && Screen.fullScreen)
             {
@@ -137,7 +147,7 @@ namespace Gameframework
 #else
                 Screen.SetResolution(fullscreenConfig.Width, fullscreenConfig.Height, FullScreenMode.MaximizedWindow);
 #endif
-                Debug.Log($"Setting Fullscreen Resolution to: {fullscreenConfig.Width}x{fullscreenConfig.Height}");
+                Debug.Log($"Setting game resolution to: {fullscreenConfig.Width}x{fullscreenConfig.Height} (Fullscreen)");
             }
         }
 #endif
