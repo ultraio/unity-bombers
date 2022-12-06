@@ -14,7 +14,9 @@ namespace Gameframework
 {
     public class ScreenResolver : BaseBehaviour
     {
+#pragma warning disable CS0414
         [SerializeField] private bool LaunchAppInFullScreen = false;
+#pragma warning restore CS0414
 
 #if UNITY_EDITOR || !UNITY_STANDALONE
         private void Awake()

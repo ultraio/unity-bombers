@@ -16,8 +16,10 @@ namespace BrainCloudUNETExample
         public static string SYSTEM_MESSAGE = "SYSTEM_MESSAGE";
         public static string STATE_NAME = "mainMenuState";
 
+#if UNITY_EDITOR
         [SerializeField]
         private string TestBlockchainData;
+#endif
 
         [SerializeField]
         private PlayerRankIcon PlayerRankIcon = null;
@@ -73,6 +75,8 @@ namespace BrainCloudUNETExample
         [SerializeField]
         private TextMeshProUGUI StoreBadgeText = null;
         [SerializeField]
+        private CanvasGroup StoreUpdateDialog = null;
+        [SerializeField]
         private Button OptionsButton = null;
         [SerializeField]
         private Button FriendsButton = null;
@@ -83,7 +87,7 @@ namespace BrainCloudUNETExample
         [SerializeField]
         private TMP_InputField ChatInputField = null;
 
-        #region BaseState
+#region BaseState
         protected override void Start()
         {
             Cursor.visible = true;
@@ -125,6 +129,7 @@ namespace BrainCloudUNETExample
             }
 
             StoreBadge.SetActive(false);
+            ResetDisplayDialog();
 
 #if STEAMWORKS_ENABLED
             QuitButton.SetActive(true);
@@ -170,7 +175,7 @@ namespace BrainCloudUNETExample
 
             base.OnDestroy();
         }
-        #endregion
+#endregion
 
         private void OnEnableRTTSuccess()
         {
@@ -187,13 +192,12 @@ namespace BrainCloudUNETExample
             GPlayerMgr.Instance.UpdateActivity(GPlayerMgr.LOCATION_MAIN_MENU, GPlayerMgr.STATUS_IDLE, "", "", true);
         }
 
-        #region Public
+#region Public
         public void Update()
         {
 #if UNITY_EDITOR
-            if (Input.GetKeyDown(KeyCode.K))
+            if (!string.IsNullOrEmpty(TestBlockchainData) && Input.GetKeyDown(KeyCode.K))
             {
-                //test blockchain item event call
                 OnBlockchainItemEvent(TestBlockchainData);
             }
 #endif
@@ -548,6 +552,7 @@ namespace BrainCloudUNETExample
             m_newBlockchainItems = 0;
             StoreBadgeText.text = "0";
             StoreBadge.SetActive(false);
+            ResetDisplayDialog();
             GStateManager.Instance.PushSubState(HangarSubState.STATE_NAME);
         }
 
@@ -572,9 +577,9 @@ namespace BrainCloudUNETExample
             GStateManager.Instance.PushSubState(CreateGameSubState.STATE_NAME, false, false);
             GStateManager.Instance.OnInitializeDelegate += onQuickPlayInit;
         }
-        #endregion
+#endregion
 
-        #region Private
+#region Private
         private void onFindLobbyLateInit(BaseState in_state)
         {
             CreateGameSubState createGameState = in_state as CreateGameSubState;
@@ -825,6 +830,7 @@ namespace BrainCloudUNETExample
                                     m_newBlockchainItems++;
                                     StoreBadgeText.text = m_newBlockchainItems.ToString();
                                     StoreBadge.SetActive(true);
+                                    StartCoroutine(ShowDisplayDialog());
                                 }
 
                             });
@@ -834,13 +840,62 @@ namespace BrainCloudUNETExample
                             m_newBlockchainItems++;
                             StoreBadgeText.text = m_newBlockchainItems.ToString();
                             StoreBadge.SetActive(true);
+                            StartCoroutine(ShowDisplayDialog());
                         }
                     }
 
                     return;
                 default:
-                    Debug.Log("(Blockchain Refresh received - NEED TO SHOW MESSAGE)");
+                    Debug.Log($"Blockchain Refresh Received - Operation: {jsonMessage["operation"] as string}");
                     return;
+            }
+        }
+
+        private void ResetDisplayDialog()
+        {
+            StopCoroutine(ShowDisplayDialog());
+
+            StoreUpdateDialog.gameObject.SetActive(false);
+            StoreUpdateDialog.alpha = 0.0f;
+            StoreUpdateDialog.transform.position = new Vector3(StoreUpdateDialog.transform.position.x,
+                                                               StoreUpdateDialog.transform.position.x, // Intentional; pivot is on bottom left so X & Y are same position
+                                                               StoreUpdateDialog.transform.position.z);
+        }
+
+        private IEnumerator ShowDisplayDialog()
+        {
+            if (StoreUpdateDialog.alpha <= 0.0f)
+            {
+                StoreUpdateDialog.gameObject.SetActive(true);
+                float originalYPos = StoreUpdateDialog.transform.position.y;
+                Vector3 newPos = StoreUpdateDialog.transform.position;
+                newPos.y = -80.0f;
+
+                while (StoreUpdateDialog.alpha < 1.0f)
+                {
+                    newPos.y = Mathf.Lerp(newPos.y, originalYPos, StoreUpdateDialog.alpha);
+
+                    StoreUpdateDialog.transform.position = newPos;
+                    StoreUpdateDialog.alpha += Time.fixedDeltaTime * 2.0f;
+
+                    yield return YieldFactory.GetWaitForFixedUpdate();
+                }
+
+                StoreUpdateDialog.alpha = 1.0f;
+                StoreUpdateDialog.transform.position = new Vector3(StoreUpdateDialog.transform.position.x,
+                                                                   originalYPos,
+                                                                   StoreUpdateDialog.transform.position.z);
+
+                yield return YieldFactory.GetWaitForSeconds(2.0f);
+
+                while (StoreUpdateDialog.alpha > 0.0f)
+                {
+                    StoreUpdateDialog.alpha -= Time.fixedDeltaTime * 2.0f;
+
+                    yield return YieldFactory.GetWaitForFixedUpdate();
+                }
+
+                ResetDisplayDialog();
             }
         }
 
@@ -963,6 +1018,6 @@ namespace BrainCloudUNETExample
         private List<PlayerData> m_friendsItems = null;
 
         //private DialogDisplay m_dialogueDisplay;
-        #endregion
+#endregion
     }
 }

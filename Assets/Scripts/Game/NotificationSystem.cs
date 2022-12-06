@@ -1,8 +1,5 @@
-using BrainCloud.JsonFx.Json;
 using BrainCloud.LitJson;
 using BrainCloudUNETExample.Game;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -25,21 +22,21 @@ namespace Gameframework
         [Header("Dialog")]
         [SerializeField] private Image DialogImage = null;
         [SerializeField] private TextMeshProUGUI DialogMessageText = null;
-        [SerializeField] private GameObject DialogButton = null;
 
+#if UNITY_EDITOR
         [Header("Editor Only")]
         [SerializeField] private string BlockchainTestData = null;
+#endif
 
-        //lazy loading GameManager
-        //TODO: GameManager might be better as a singleton 
-        private GameManager m_gMan;
-        private int m_newPlaneSkin = -1;
+        private GameManager gameManager;
+        private int newPlaneSkin = -1;
         private bool canSwitchPlanes = false;
 
         private void Start()
         {
             ResetAnimation();
-            if (m_gMan == null) m_gMan = GameObject.Find("GameManager").GetComponent<GameManager>();
+
+            if (gameManager == null) gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
             GCore.Wrapper.RTTService.RegisterRTTBlockchainItemEvent(OnBlockchainItemEvent);
         }
@@ -51,11 +48,10 @@ namespace Gameframework
             GCore.Wrapper.RTTService.DeregisterRTTBlockchainItemEvent();
         }
 
-
         private void Update()
         {
 #if UNITY_EDITOR
-            //Test blockchain event
+            // Test blockchain event
             if (Input.GetKeyDown(KeyCode.K))
             {
                 OnBlockchainItemEvent(BlockchainTestData);
@@ -79,16 +75,15 @@ namespace Gameframework
                 case "ITEM_EVENT": 
                     if (jsonData["data"]["operation"].ToString() == "INS")
                     {
-                        //only looking for INSERT events to show that there is a new item
+                        // Only looking for INSERT events to show that there is a new item
                         int newItemFactoryID = (int)jsonData["data"]["newJSON"]["object"]["token_factory_id"];
 
                         string suppressDuplicatesStr = GConfigManager.GetStringValue("suppressDuplicateBomberSkins");
-                        bool suppressDuplicates = false;
-                        bool.TryParse(suppressDuplicatesStr, out suppressDuplicates);
+                        bool.TryParse(suppressDuplicatesStr, out bool suppressDuplicates);
 
                         if (suppressDuplicates)
                         {
-                            //check if user already owns this new skin
+                            // Check if user already owns this new skin
                             GCore.Wrapper.Client.Blockchain.GetBlockchainItems("default", "{}", (response, cbObject) =>
                             {
                                 bool itemExists = false;
@@ -113,7 +108,7 @@ namespace Gameframework
                                     PlaneScriptableObject planeDataEntry = planeSkinsDataObjects.Where(x => x.planeID == newItemFactoryID).FirstOrDefault();
                                     if (planeDataEntry != null)
                                     {
-                                        m_newPlaneSkin = newItemFactoryID;
+                                        newPlaneSkin = newItemFactoryID;
                                         MessageImage.sprite = planeDataEntry.planeThumbnail_green;
                                         DialogImage.sprite = planeDataEntry.planeThumbnail_green;
                                         DialogMessageText.text = "New Bomber Available!";
@@ -134,7 +129,7 @@ namespace Gameframework
                             PlaneScriptableObject planeDataEntry = planeSkinsDataObjects.Where(x => x.planeID == newItemFactoryID).FirstOrDefault();
                             if (planeDataEntry != null)
                             {
-                                m_newPlaneSkin = newItemFactoryID;
+                                newPlaneSkin = newItemFactoryID;
                                 MessageImage.sprite = planeDataEntry.planeThumbnail_green;
                                 DialogImage.sprite = planeDataEntry.planeThumbnail_green;
                                 DialogMessageText.text = "New Bomber Available!";
@@ -174,9 +169,9 @@ namespace Gameframework
 
             ResetAnimation();
 
-            m_gMan.DitchAndSwitchPlaneSkin(m_newPlaneSkin);
+            gameManager.DitchAndSwitchPlaneSkin(newPlaneSkin);
 
-            Debug.Log($"Swapping to Plane Skin ID: {m_newPlaneSkin}");
+            Debug.Log($"Swapping to Plane Skin ID: {newPlaneSkin}");
         }
 
         //Gets called by an animation event when the notification disappears

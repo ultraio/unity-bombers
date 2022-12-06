@@ -544,7 +544,7 @@ MonoBehaviour:
   MessageImage: {fileID: 2993686979132157585}
   DialogImage: {fileID: 1832319903383670544}
   DialogMessageText: {fileID: 2219227401501101288}
-  DialogButton: {fileID: 2512808095855320436}
+  BlockchainTestData: 
 --- !u!95 &3238646034181380763
 Animator:
   serializedVersion: 4
@@ -1442,32 +1442,32 @@ PrefabInstance:
     - target: {fileID: 3126084763637658073, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3126084763637658073, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3126084763637658073, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 102.7
       objectReference: {fileID: 0}
     - target: {fileID: 3126084763637658073, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 18.63
       objectReference: {fileID: 0}
     - target: {fileID: 3126084763637658073, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 51.35
       objectReference: {fileID: 0}
     - target: {fileID: 3126084763637658073, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -9.315
       objectReference: {fileID: 0}
     - target: {fileID: 5633921433304409038, guid: 3b57fd582c72f2a479264597aca31ef2,
         type: 3}
