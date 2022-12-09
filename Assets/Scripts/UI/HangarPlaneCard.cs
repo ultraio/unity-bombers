@@ -1,52 +1,58 @@
 using Gameframework;
 using System;
-using System.Collections;
-using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace BrainCloudUNETExample
 {
     public class HangarPlaneCard : BaseBehaviour
     {
-        public TextMeshProUGUI Title = null;
-        public TextMeshProUGUI Description = null;
-        public Button ActivateButton = null;
-        public Image UpperImage = null;
-        public Image Spinner = null;
-        public GameObject UpperBG = null;
-        public GameObject ActivatedLabel = null;
-        public PlaneScriptableObject planeData;
-        public GameObject ItemCountBox = null;
-        public TextMeshProUGUI ItemCountText = null;
+        [SerializeField] private TextMeshProUGUI Title = null;
+        [SerializeField] private TextMeshProUGUI Description = null;
+        [SerializeField] private Button ActivateButton = null;
+        [SerializeField] private Image UpperImage = null;
+        [SerializeField] private Image Spinner = null;
+        [SerializeField] private GameObject UpperBG = null;
+        [SerializeField] private GameObject ActivatedLabel = null;
+        [SerializeField] private GameObject ItemCountBox = null;
+        [SerializeField] private TextMeshProUGUI ItemCountText = null;
 
-        public Action<int> OnActivateClickedAction;
+        public Action<int, int> OnActivateClickedAction;
+
+        public PlaneScriptableObject PlaneSkinSOData { get; private set; }
+        public int CurrentPlaneSkinCount { get; private set; }
 
         #region public
         public void LateInit(PlaneScriptableObject in_data, int count)
         {
-            planeData = in_data;
+            UpdatePlaneSkin(in_data, count);
 
-            Title.text = planeData.planeName;
-            Description.text = planeData.planeDescription;
+            Title.text = PlaneSkinSOData.planeName;
+            Description.text = PlaneSkinSOData.planeDescription;
 
-            if(count > 1)
-            {
-                ItemCountBox.SetActive(true);
-                ItemCountText.text = count.ToString();
-            }
-            else
-            {
-                ItemCountBox.SetActive(false);
-                ItemCountText.text = String.Empty;
-            }
-
-            if (UpperImage != null) UpperImage.sprite = planeData.planeThumbnail_green;
+            if (UpperImage != null) UpperImage.sprite = PlaneSkinSOData.planeThumbnail_green;
             if (UpperBG != null) UpperBG.SetActive(true);
             if (Spinner != null) Spinner.gameObject.SetActive(false);
 
             ActivateButton.onClick.AddListener(OnActivateClicked);
+        }
+
+        public void UpdatePlaneSkin(PlaneScriptableObject in_data, int count)
+        {
+            PlaneSkinSOData = in_data;
+            CurrentPlaneSkinCount = count;
+
+            if (CurrentPlaneSkinCount > 1)
+            {
+                ItemCountBox.SetActive(true);
+                ItemCountText.text = CurrentPlaneSkinCount.ToString();
+            }
+            else
+            {
+                ItemCountBox.SetActive(false);
+                ItemCountText.text = string.Empty;
+            }
         }
 
         public void ToggleActive(bool active)
@@ -61,7 +67,7 @@ namespace BrainCloudUNETExample
 
         private void OnActivateClicked()
         {
-            OnActivateClickedAction?.Invoke(planeData.planeID);
+            OnActivateClickedAction?.Invoke(PlaneSkinSOData.planeID, CurrentPlaneSkinCount);
         }
 
         protected override void OnDestroy()
