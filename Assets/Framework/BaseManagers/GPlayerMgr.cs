@@ -20,7 +20,9 @@ namespace Gameframework
     public class GPlayerMgr : SingletonBehaviour<GPlayerMgr>
     {
         #region public
+
         public PlayerData PlayerData { get; private set; }
+        public Dictionary<int, int> BlockchainItems { get; private set; }
         public Dictionary<string, object> CurrencyMap { get; private set; }
         public Dictionary<string, object> PeerCurrencyMap { get; private set; }
         public Dictionary<string, object> ParentCurrencyMap { get; private set; }
@@ -30,7 +32,6 @@ namespace Gameframework
 
         public int LoginCount { get; private set; }
         public ulong LastLogin { get; private set; }
-
         public string PlayerPictureUrl { get; private set; }
 
         // turn into BCStats
@@ -159,6 +160,8 @@ namespace Gameframework
             // Retrieve the BC Events
             GCore.Wrapper.Client.EventService.GetEvents(onGetBCEventsSuccess, onGetBCEventsFailed, null);
             GetXpData();
+            GetBlockchainItems();
+            GetPlayerPlaneIDSkin(null);
             ////////////////
             ////////////////
 
@@ -205,8 +208,125 @@ namespace Gameframework
             GCore.Wrapper.ScriptService.RunScript("GetXpData", null, OnGetXPDataSuccess);
         }
 
+        public void GetBlockchainItems(Action<bool> onItemsRetrieved = null)
+        {
+            GStateManager.Instance.EnableLoadingSpinner(true);
+
+            BlockchainItems?.Clear();
+            BlockchainItems = new Dictionary<int, int>() // Add the default Plane Skin ID
+            {
+                { PlaneScriptableObject.DEFAULT_SKIN_ID, 1 }
+            };
+
+            SuccessCallback onSuccess = (string response, object cbObject) =>
+            {
+                Debug.Log($"Received Blockchain items: {response}");
+
+                bool.TryParse(GConfigManager.GetStringValue("suppressDuplicateBomberSkins"), out bool suppressDuplicates);
+
+                JsonData jsonData = JsonMapper.ToObject(response);
+                JsonData items = jsonData["data"]["response"]["items"];
+
+                // Store the player's plane skins
+                for (int i = 0; i < items.Count; i++)
+                {
+                    int factoryID = int.Parse(items[i]["json"]["token_factory_id"].ToString());
+                    bool containsID = BlockchainItems.ContainsKey(factoryID);
+                    if (!suppressDuplicates && containsID)
+                    {
+                        BlockchainItems[factoryID]++;
+                    }
+                    else if (!containsID)
+                    {
+                        BlockchainItems.Add(factoryID, 1);
+                    }
+                }
+
+                onItemsRetrieved?.Invoke(true);
+
+                GStateManager.Instance.EnableLoadingSpinner(false);
+            };
+
+            FailureCallback onFailure = (int status, int code, string error, object cbObject) =>
+            {
+                onItemsRetrieved?.Invoke(false);
+
+                GStateManager.Instance.EnableLoadingSpinner(false);
+
+                HudHelper.DisplayMessageDialog("BLOCKCHAIN ERROR", $"Blockchain items failed to load | {status} {code} {error}", "OK");
+            };
+
+            GCore.Wrapper.Client.Blockchain.GetBlockchainItems("default", "{}", onSuccess, onFailure);
+        }
+
+        public void GetPlayerPlaneIDSkin(Action<int> onPlayerSkinRetrieved)
+        {
+            SuccessCallback onSuccess = (string responseData, object cbObject) =>
+            {
+                JsonData jsonData = JsonMapper.ToObject(responseData);
+                JsonData entry = jsonData["data"];
+
+                int planeID = PlaneScriptableObject.DEFAULT_SKIN_ID;
+                if (entry != null)
+                {
+                    m_PlayerSkinLatestVersion = int.Parse(jsonData["data"]["version"].ToString());
+                    planeID = int.Parse(entry["data"][GBomberRTTConfigManager.PLANE_SKIN_ID].ToString());
+                }
+
+                onPlayerSkinRetrieved?.Invoke(planeID);
+            };
+
+            FailureCallback onFailure = (int status, int reasonCode, string jsonError, object cbObject) =>
+            {
+                Debug.LogError($"Couldn't get plane ID of user: {status} {reasonCode}");
+
+                onPlayerSkinRetrieved?.Invoke(PlaneScriptableObject.DEFAULT_SKIN_ID);
+            };
+
+            GCore.Wrapper.EntityService.GetSingleton(GBomberRTTConfigManager.PLANE_SKIN_ID.ToUpper(), onSuccess, onFailure);
+        }
+
+        public void SetPlayerPlaneIDSkin(int planeID, Action<int> onPlayerSkinStored)
+        {
+            JsonData statsJson = JsonMapper.ToJson(new Dictionary<string, object>
+            {
+                {GBomberRTTConfigManager.PLANE_SKIN_ID, planeID}
+            });
+
+            JsonData aclJson = JsonMapper.ToJson(new Dictionary<string, object>
+            {
+                {"other", 1 }
+            });
+
+            SuccessCallback onSuccess = (string responseData, object cbObject) =>
+            {
+                JsonData jsonData = JsonMapper.ToObject(responseData);
+                JsonData entry = jsonData["data"];
+
+                if (entry != null)
+                {
+                    m_PlayerSkinLatestVersion = int.Parse(jsonData["data"]["version"].ToString());
+                }
+
+                onPlayerSkinStored?.Invoke(planeID);
+            };
+
+            FailureCallback onFailure = (int status, int reasonCode, string jsonError, object cbObject) =>
+            {
+                Debug.LogError($"Unable to set plane ID: {status} {reasonCode}");
+
+                onPlayerSkinStored?.Invoke(PlaneScriptableObject.DEFAULT_SKIN_ID);
+            };
+
+            GCore.Wrapper.EntityService.UpdateSingleton(GBomberRTTConfigManager.PLANE_SKIN_ID.ToUpper(),
+                                                        statsJson.ToString(), aclJson.ToString(),
+                                                        m_PlayerSkinLatestVersion, onSuccess, onFailure);
+        }
+
         public void UpdatePlayerName(string in_name, SuccessCallback in_success = null, FailureCallback in_failure = null)
         {
+            GStateManager.Instance.EnableLoadingSpinner(true);
+
             GCore.Wrapper.Client.PlayerStateService.UpdateName(in_name, in_success, in_failure);
             PlayerData.PlayerName = (in_name);
             GEventManager.TriggerEvent(GEventManager.ON_PLAYER_DATA_UPDATED);
@@ -1171,6 +1291,7 @@ namespace Gameframework
         public const string PEER_NAME = "gameloot";
         public const string PARENT_NAME = "master";
 
+        private int m_PlayerSkinLatestVersion = 0;
         private string m_AppUpgradeURL = "";
         private string m_currentLocation = "";
         private string m_currentStatus = "";

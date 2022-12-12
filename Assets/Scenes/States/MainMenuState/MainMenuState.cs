@@ -999,7 +999,7 @@ namespace BrainCloudUNETExample
             FriendsButton.interactable = in_active;
         }
 
-        private string platform = "";   // denotes All
+        private string platform = ""; // denotes All
         private TMP_InputField m_inputField = null;
         private int MIN_CHARACTERS_NAME = 3;
         private int MAX_CHARACTERS_NAME = 16;
@@ -1016,8 +1016,6 @@ namespace BrainCloudUNETExample
 
         private List<FriendsListItem> m_friendsListItem = null;
         private List<PlayerData> m_friendsItems = null;
-
-        //private DialogDisplay m_dialogueDisplay;
 #endregion
     }
 }

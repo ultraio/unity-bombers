@@ -7,7 +7,6 @@ namespace BrainCloudUNETExample
         public const string ON_SEARCH_RESULTS_UPDATED = "OnSearchResultsUpdated";
         public const string JSON_GOLD_WINGS = "bGoldWings";
         public const string PLANE_SKIN_ID = "planeSkinID";
-        public const string CURRENT_PLANE_SKIN_ID_COUNT = "currentPlaneSkinIDCount";
         public const string CURRENCY_GOLD_WINGS = "goldWings";
     }
 }

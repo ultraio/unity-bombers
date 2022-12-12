@@ -18,7 +18,7 @@ namespace BrainCloudUNETExample
         [SerializeField] private GameObject ItemCountBox = null;
         [SerializeField] private TextMeshProUGUI ItemCountText = null;
 
-        public Action<int, int> OnActivateClickedAction;
+        public Action<int> OnActivateClickedAction;
 
         public PlaneScriptableObject PlaneSkinSOData { get; private set; }
         public int CurrentPlaneSkinCount { get; private set; }
@@ -67,7 +67,7 @@ namespace BrainCloudUNETExample
 
         private void OnActivateClicked()
         {
-            OnActivateClickedAction?.Invoke(PlaneSkinSOData.planeID, CurrentPlaneSkinCount);
+            OnActivateClickedAction?.Invoke(PlaneSkinSOData.planeID);
         }
 
         protected override void OnDestroy()
