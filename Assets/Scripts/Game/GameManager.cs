@@ -1798,31 +1798,8 @@ namespace BrainCloudUNETExample.Game
         {
             if (aPlayer == BombersNetworkManager.LocalPlayer.NetId)
             {
-                //if its the local player update the singleton representing skin choice
-                //get the singleton version first 
-                GCore.Wrapper.EntityService.GetSingleton("PlaneSkin", (string responseData, object cbObject) =>
-                {
-                    JsonData jsonData = JsonMapper.ToObject(responseData);
-                    JsonData entry = jsonData["data"];
-
-                    if (entry != null)
-                    {
-                        int latestVersion = int.Parse(jsonData["data"]["version"].ToString());
-                        Dictionary<string, object> skinData = new Dictionary<string, object>
-                        {
-                            {GBomberRTTConfigManager.PLANE_SKIN_ID, newSkinID}
-                        };
-
-                        JsonData skinJsonData = JsonMapper.ToJson(skinData);
-
-                        Dictionary<string, object> aclData = new Dictionary<string, object>
-                        {
-                            {"other", 1 }
-                        };
-                        JsonData aclJson = JsonMapper.ToJson(aclData);
-                        GCore.Wrapper.EntityService.UpdateSingleton("PlaneSkin", skinJsonData.ToString(), aclJson.ToString(), latestVersion);
-                    }
-                });
+                // If its the local player update the singleton representing skin choice
+                GPlayerMgr.Instance.GetPlayerPlaneIDSkin((int id) => GPlayerMgr.Instance.SetPlayerPlaneIDSkin(id, null));
             }
 
             RpcSwitchPlayerSkin(aPlayer, newSkinID);

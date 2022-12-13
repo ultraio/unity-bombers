@@ -30,6 +30,12 @@ namespace BrainCloudUNETExample
 
         public void GetUpdatedBlockchainItems(bool success)
         {
+            // First clear all cards
+            for (int i = 0; i < HangarContent.childCount; i++)
+            {
+                Destroy(HangarContent.GetChild(i).gameObject);
+            }
+
             // Find all skins & display them as hangar cards
             HangarPlaneCard card;
             Dictionary<int, int> items = GPlayerMgr.Instance.BlockchainItems;

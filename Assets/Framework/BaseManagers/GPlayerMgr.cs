@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using BrainCloud;
 using System.Globalization;
+using BrainCloudUNETExample;
 #if FACEBOOK_ENABLED
 using Facebook.Unity;
 #endif
@@ -210,8 +211,6 @@ namespace Gameframework
 
         public void GetBlockchainItems(Action<bool> onItemsRetrieved = null)
         {
-            GStateManager.Instance.EnableLoadingSpinner(true);
-
             BlockchainItems?.Clear();
             BlockchainItems = new Dictionary<int, int>() // Add the default Plane Skin ID
             {
@@ -224,8 +223,8 @@ namespace Gameframework
 
                 bool.TryParse(GConfigManager.GetStringValue("suppressDuplicateBomberSkins"), out bool suppressDuplicates);
 
-                JsonData jsonData = JsonMapper.ToObject(response);
-                JsonData items = jsonData["data"]["response"]["items"];
+                BrainCloud.LitJson.JsonData jsonData = BrainCloud.LitJson.JsonMapper.ToObject(response);
+                BrainCloud.LitJson.JsonData items = jsonData["data"]["response"]["items"];
 
                 // Store the player's plane skins
                 for (int i = 0; i < items.Count; i++)
@@ -243,15 +242,11 @@ namespace Gameframework
                 }
 
                 onItemsRetrieved?.Invoke(true);
-
-                GStateManager.Instance.EnableLoadingSpinner(false);
             };
 
             FailureCallback onFailure = (int status, int code, string error, object cbObject) =>
             {
                 onItemsRetrieved?.Invoke(false);
-
-                GStateManager.Instance.EnableLoadingSpinner(false);
 
                 HudHelper.DisplayMessageDialog("BLOCKCHAIN ERROR", $"Blockchain items failed to load | {status} {code} {error}", "OK");
             };
@@ -263,8 +258,8 @@ namespace Gameframework
         {
             SuccessCallback onSuccess = (string responseData, object cbObject) =>
             {
-                JsonData jsonData = JsonMapper.ToObject(responseData);
-                JsonData entry = jsonData["data"];
+                BrainCloud.LitJson.JsonData jsonData = BrainCloud.LitJson.JsonMapper.ToObject(responseData);
+                BrainCloud.LitJson.JsonData entry = jsonData["data"];
 
                 int planeID = PlaneScriptableObject.DEFAULT_SKIN_ID;
                 if (entry != null)
@@ -273,7 +268,7 @@ namespace Gameframework
                     planeID = int.Parse(entry["data"][GBomberRTTConfigManager.PLANE_SKIN_ID].ToString());
                 }
 
-                onPlayerSkinRetrieved?.Invoke(planeID);
+                onPlayerSkinRetrieved?.Invoke(BlockchainItems.ContainsKey(planeID) ? planeID : PlaneScriptableObject.DEFAULT_SKIN_ID);
             };
 
             FailureCallback onFailure = (int status, int reasonCode, string jsonError, object cbObject) =>
@@ -283,25 +278,27 @@ namespace Gameframework
                 onPlayerSkinRetrieved?.Invoke(PlaneScriptableObject.DEFAULT_SKIN_ID);
             };
 
-            GCore.Wrapper.EntityService.GetSingleton(GBomberRTTConfigManager.PLANE_SKIN_ID.ToUpper(), onSuccess, onFailure);
+            GCore.Wrapper.EntityService.GetSingleton(GBomberRTTConfigManager.SINGLETON_PLANE_SKIN_ID, onSuccess, onFailure);
         }
 
         public void SetPlayerPlaneIDSkin(int planeID, Action<int> onPlayerSkinStored)
         {
-            JsonData statsJson = JsonMapper.ToJson(new Dictionary<string, object>
+            planeID = BlockchainItems.ContainsKey(planeID) ? planeID : PlaneScriptableObject.DEFAULT_SKIN_ID;
+
+            BrainCloud.LitJson.JsonData statsJson = BrainCloud.LitJson.JsonMapper.ToJson(new Dictionary<string, object>
             {
                 {GBomberRTTConfigManager.PLANE_SKIN_ID, planeID}
             });
 
-            JsonData aclJson = JsonMapper.ToJson(new Dictionary<string, object>
+            BrainCloud.LitJson.JsonData aclJson = BrainCloud.LitJson.JsonMapper.ToJson(new Dictionary<string, object>
             {
                 {"other", 1 }
             });
 
             SuccessCallback onSuccess = (string responseData, object cbObject) =>
             {
-                JsonData jsonData = JsonMapper.ToObject(responseData);
-                JsonData entry = jsonData["data"];
+                BrainCloud.LitJson.JsonData jsonData = BrainCloud.LitJson.JsonMapper.ToObject(responseData);
+                BrainCloud.LitJson.JsonData entry = jsonData["data"];
 
                 if (entry != null)
                 {

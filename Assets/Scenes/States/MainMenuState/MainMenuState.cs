@@ -784,71 +784,62 @@ namespace BrainCloudUNETExample
 
         private void OnBlockchainItemEvent(string in_message)
         {
+            if (string.IsNullOrEmpty(in_message)) return;
+
             Dictionary<string, object> jsonMessage = (Dictionary<string, object>)JsonReader.Deserialize(in_message);
             Dictionary<string, object> jsonData = (Dictionary<string, object>)jsonMessage[BrainCloudConsts.JSON_DATA];
             Dictionary<string, object> newItemJSON = (Dictionary<string, object>)jsonData["newJSON"];
             Dictionary<string, object> newItemData = (Dictionary<string, object>)newItemJSON["object"];
 
-            int newItemFactoryID = (int)newItemData["token_factory_id"];
+            int factoryID = (int)newItemData["token_factory_id"];
 
-            string suppressDuplicatesStr = GConfigManager.GetStringValue("suppressDuplicateBomberSkins");
-            bool suppressDuplicates = false;
-            bool.TryParse(suppressDuplicatesStr, out suppressDuplicates);
+            HangarSubState hangerSubState = null;
+            if(GStateManager.Instance.CurrentSubState != null &&
+               GStateManager.Instance.CurrentSubState.StateInfo.StateId == HangarSubState.STATE_NAME)
+            {
+                hangerSubState = GStateManager.Instance.CurrentSubState as HangarSubState;
+            }
 
+            GPlayerMgr.Instance.BlockchainItems.TryGetValue(factoryID, out int currentItemCount);
+
+            Action<bool> onGetBlockchainItems = null;
             switch (jsonMessage["operation"] as string)
             {
                 case "ITEM_EVENT":
-                    if (jsonData["operation"] as string == "INS") {
-                        //only looking for INSERT events to show that there is a new item
-
-                        //check if user already owns this item
-                        if (suppressDuplicates)
+                    if (jsonData["operation"] as string == "INS") // Only looking for INSERT events to show that there is a new item
+                    {
+                        onGetBlockchainItems = (bool success) =>
                         {
-                            GCore.Wrapper.Client.Blockchain.GetBlockchainItems("default", "{}", (response, cbObject) =>
+                            if (hangerSubState != null)
                             {
-                                bool itemExists = false;
-
-                                Dictionary<string, object> blockChainJsonMessage = (Dictionary<string, object>)JsonReader.Deserialize(response);
-                                Dictionary<string, object> blockchainData = (Dictionary<string, object>)blockChainJsonMessage[BrainCloudConsts.JSON_DATA];
-                                Dictionary<string, object> blockchainResponse = (Dictionary<string, object>)blockchainData[BrainCloudConsts.JSON_RESPONSE];
-                                object[] blockchainItems = (object[])blockchainResponse["items"];
-                                for(int i = 0; i < blockchainItems.Length; i++)
-                                {
-                                    Dictionary<string, object> itemData = (Dictionary<string, object>)blockchainItems[i];
-                                    Dictionary<string, object> itemDetails = (Dictionary<string, object>)itemData["json"];
-                                    int factoryID = (int)itemDetails["token_factory_id"];
-
-                                    if(factoryID == newItemFactoryID)
-                                    {
-                                        itemExists = true;
-                                        break;
-                                    }
-                                }
-
-                                if (!itemExists)
-                                {
-                                    m_newBlockchainItems++;
-                                    StoreBadgeText.text = m_newBlockchainItems.ToString();
-                                    StoreBadge.SetActive(true);
-                                    StartCoroutine(ShowDisplayDialog());
-                                }
-
-                            });
-                        }
-                        else
-                        {
-                            m_newBlockchainItems++;
-                            StoreBadgeText.text = m_newBlockchainItems.ToString();
-                            StoreBadge.SetActive(true);
-                            StartCoroutine(ShowDisplayDialog());
-                        }
+                                hangerSubState.GetUpdatedBlockchainItems(success);
+                            }
+                            else if(GPlayerMgr.Instance.BlockchainItems.TryGetValue(factoryID, out int updatedItemCount) &&
+                                    updatedItemCount > currentItemCount)
+                            {
+                                m_newBlockchainItems++;
+                                StoreBadgeText.text = m_newBlockchainItems.ToString();
+                                StoreBadge.SetActive(true);
+                                StartCoroutine(ShowDisplayDialog());
+                            }
+                        };
                     }
-
-                    return;
+                    break;
                 default:
                     Debug.Log($"Blockchain Refresh Received - Operation: {jsonMessage["operation"] as string}");
-                    return;
+                    onGetBlockchainItems = (bool success) =>
+                    {
+                        if (hangerSubState != null)
+                        {
+                            hangerSubState.GetUpdatedBlockchainItems(success);
+                        }
+                    };
+                    break;
             }
+
+            GStateManager.Instance.EnableLoadingSpinner(hangerSubState != null);
+
+            GPlayerMgr.Instance.GetBlockchainItems(onGetBlockchainItems);
         }
 
         private void ResetDisplayDialog()

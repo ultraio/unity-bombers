@@ -8,5 +8,8 @@ namespace BrainCloudUNETExample
         public const string JSON_GOLD_WINGS = "bGoldWings";
         public const string PLANE_SKIN_ID = "planeSkinID";
         public const string CURRENCY_GOLD_WINGS = "goldWings";
+
+        // BC Singletons
+        public static readonly string SINGLETON_PLANE_SKIN_ID = PLANE_SKIN_ID.ToUpper();
     }
 }

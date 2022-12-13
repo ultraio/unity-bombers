@@ -71,18 +71,12 @@ namespace BrainCloudUNETExample
             string[] in_otherCxIds = (string[])obj;
             Dictionary<string, object> playerExtra = new Dictionary<string, object>();
             playerExtra.Add("cxId", GCore.Wrapper.Client.RTTConnectionID);
-            playerExtra.Add(GBomberRTTConfigManager.JSON_GOLD_WINGS, GPlayerMgr.Instance.GetCurrencyBalance(GBomberRTTConfigManager.CURRENCY_GOLD_WINGS) > 0 ? true : false);
+            playerExtra.Add(GBomberRTTConfigManager.JSON_GOLD_WINGS,
+                            GPlayerMgr.Instance.GetCurrencyBalance(GBomberRTTConfigManager.CURRENCY_GOLD_WINGS) > 0 ? true : false);
 
-            int userPlaneID = 0;
-            GCore.Wrapper.EntityService.GetSingleton("PlaneSkin", (string responseData, object cbObject) =>
+            GPlayerMgr.Instance.GetPlayerPlaneIDSkin((int planeId) =>
             {
-                BrainCloud.LitJson.JsonData jsonData = BrainCloud.LitJson.JsonMapper.ToObject(responseData);
-                BrainCloud.LitJson.JsonData entry = jsonData["data"];
-
-                if (entry != null)
-                    userPlaneID = int.Parse(entry["data"][GBomberRTTConfigManager.PLANE_SKIN_ID].ToString());
-
-                playerExtra.Add(GBomberRTTConfigManager.PLANE_SKIN_ID, userPlaneID);
+                playerExtra.Add(GBomberRTTConfigManager.PLANE_SKIN_ID, planeId);
 
                 GCore.Wrapper.LobbyService.CreateLobbyWithPingData(m_lastSelectedRegionType, 76, false, playerExtra, "", s_matchOptions, in_otherCxIds);
             });
@@ -107,74 +101,63 @@ namespace BrainCloudUNETExample
         private void onPingRegionsSuccessFindOrCreate(string in_str, object obj)
         {
             string[] in_otherCxIds = (string[])obj;
-            
-
-
             Dictionary<string, object> algo = new Dictionary<string, object>();
 
             float[] arry = { 10.0f, 20.5f, 80.0f };
             float[] arry2 = { 20.0f, 20.5f, 80.0f, 160.0f };
             float[] arry3 = { 80.0f, 160.0f };
-
             float[] arry4 = { 250, 400.0f };
 
             algo[Constants.LobbyStrategy] = Constants.StrategyCompound;
 
-           // make algos
-           List<Dictionary<string, string>> algos = new List<Dictionary<string, string>>();
-           Dictionary<string, string> pingAlgo = new Dictionary<string, string>();
-           Dictionary<string, string> ratingAlgo = new Dictionary<string, string>();
-           pingAlgo[Constants.LobbyStrategy] = Constants.StrategyAbsolute;
-           pingAlgo[Constants.LobbyAlignment] = Constants.StrategyAbsolute;
-           pingAlgo[Constants.UserItemsServiceCriteria] = Constants.CriteraPing;
-
-           ratingAlgo[Constants.LobbyStrategy] = Constants.StrategyRangedPercent;
-           ratingAlgo[Constants.LobbyAlignment] = Constants.AlignmentCenter;
-           ratingAlgo[Constants.UserItemsServiceCriteria] = Constants.CriteraRating;
-
+            // make algos
+            List<Dictionary<string, string>> algos = new List<Dictionary<string, string>>();
+            Dictionary<string, string> pingAlgo = new Dictionary<string, string>();
+            Dictionary<string, string> ratingAlgo = new Dictionary<string, string>();
+            pingAlgo[Constants.LobbyStrategy] = Constants.StrategyAbsolute;
+            pingAlgo[Constants.LobbyAlignment] = Constants.StrategyAbsolute;
+            pingAlgo[Constants.UserItemsServiceCriteria] = Constants.CriteraPing;
+            
+            ratingAlgo[Constants.LobbyStrategy] = Constants.StrategyRangedPercent;
+            ratingAlgo[Constants.LobbyAlignment] = Constants.AlignmentCenter;
+            ratingAlgo[Constants.UserItemsServiceCriteria] = Constants.CriteraRating;
+            
             algos.Add(pingAlgo);
-           algos.Add(ratingAlgo);
-           algo[Constants.CompoundAlgos] = algos.ToArray();
-
-           // create compound ranges
-           Dictionary<int, float[]> compoundRange = new Dictionary<int, float[]>();
-            compoundRange[2000] = arry4;
-            var compoundedRangeData = new List<object[]>();
-           foreach (var item in compoundRange)
-           {
-               object[] newData = { item.Key, item.Value };
-               compoundedRangeData.Add(newData);
-           }
-           algo[Constants.CompoundRanges] = compoundedRangeData.ToArray();
+            algos.Add(ratingAlgo);
+            algo[Constants.CompoundAlgos] = algos.ToArray();
+            
+            // create compound ranges
+            Dictionary<int, float[]> compoundRange = new Dictionary<int, float[]>();
+             compoundRange[2000] = arry4;
+             var compoundedRangeData = new List<object[]>();
+            foreach (var item in compoundRange)
+            {
+                object[] newData = { item.Key, item.Value };
+                compoundedRangeData.Add(newData);
+            }
+            algo[Constants.CompoundRanges] = compoundedRangeData.ToArray();
 
             /*
-                   // ranged percent strategy
-                   algo[OperationParam.LobbyStrategy.Value] = OperationParam.StrategyRangedPercent.Value;
-                   algo[OperationParam.LobbyAlignment.Value] =  OperationParam.AlignmentCenter.Value;
-                   algo[OperationParam.LobbyRanges.Value] = arry;
+                // ranged percent strategy
+                algo[OperationParam.LobbyStrategy.Value] = OperationParam.StrategyRangedPercent.Value;
+                algo[OperationParam.LobbyAlignment.Value] =  OperationParam.AlignmentCenter.Value;
+                algo[OperationParam.LobbyRanges.Value] = arry;
 
 
-                    // ranged-absolute strategy
-                    algo[OperationParam.LobbyStrategy.Value] = OperationParam.StrategyRangedAbsolute.Value;
-                    algo[OperationParam.LobbyAlignment.Value] = OperationParam.AlignmentCenter.Value;
-                    algo[OperationParam.LobbyRanges.Value] = arry;
-                    */
+                 // ranged-absolute strategy
+                 algo[OperationParam.LobbyStrategy.Value] = OperationParam.StrategyRangedAbsolute.Value;
+                 algo[OperationParam.LobbyAlignment.Value] = OperationParam.AlignmentCenter.Value;
+                 algo[OperationParam.LobbyRanges.Value] = arry;
+            */
 
             Dictionary<string, object> playerExtra = new Dictionary<string, object>();
             playerExtra.Add("cxId", GCore.Wrapper.Client.RTTConnectionID);
-            playerExtra.Add(GBomberRTTConfigManager.JSON_GOLD_WINGS, GPlayerMgr.Instance.GetCurrencyBalance(GBomberRTTConfigManager.CURRENCY_GOLD_WINGS) > 0 ? true : false);
+            playerExtra.Add(GBomberRTTConfigManager.JSON_GOLD_WINGS,
+                            GPlayerMgr.Instance.GetCurrencyBalance(GBomberRTTConfigManager.CURRENCY_GOLD_WINGS) > 0 ? true : false);
 
-            int userPlaneID = 0;
-
-            GCore.Wrapper.EntityService.GetSingleton("PlaneSkin", (string responseData, object cbObject) =>
+            GPlayerMgr.Instance.GetPlayerPlaneIDSkin((int planeId) =>
             {
-                BrainCloud.LitJson.JsonData jsonData = BrainCloud.LitJson.JsonMapper.ToObject(responseData);
-                BrainCloud.LitJson.JsonData entry = jsonData["data"];
-
-                if (entry != null)
-                    userPlaneID = int.Parse(entry["data"][GBomberRTTConfigManager.PLANE_SKIN_ID].ToString());
-
-                playerExtra.Add(GBomberRTTConfigManager.PLANE_SKIN_ID, userPlaneID);
+                playerExtra.Add(GBomberRTTConfigManager.PLANE_SKIN_ID, planeId);
 
                 GCore.Wrapper.LobbyService.FindOrCreateLobbyWithPingData(m_lastSelectedRegionType, 76, 2, algo, s_matchOptions, 1, false, playerExtra, "", s_matchOptions, in_otherCxIds);
             });

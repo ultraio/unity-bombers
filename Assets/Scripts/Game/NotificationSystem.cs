@@ -1,5 +1,7 @@
-using BrainCloud.LitJson;
+using BrainCloud.JsonFx.Json;
 using BrainCloudUNETExample.Game;
+using System.Collections.Generic;
+using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -14,7 +16,6 @@ namespace Gameframework
 
         [Header("Notification System")]
         [SerializeField] private Animator NewBombersAnimator = null;
-        [SerializeField] private GameObject Canvas = null;
 
         [Header("Message")]
         [SerializeField] private Image MessageImage = null;
@@ -28,9 +29,10 @@ namespace Gameframework
         [SerializeField] private string BlockchainTestData = null;
 #endif
 
-        private GameManager gameManager;
+        private GameManager gameManager = null;
         private int newPlaneSkin = -1;
         private bool canSwitchPlanes = false;
+        PlaneScriptableObject[] planeSkinsDataObjects = null;
 
         private void Start()
         {
@@ -38,14 +40,24 @@ namespace Gameframework
 
             if (gameManager == null) gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
+            planeSkinsDataObjects = Resources.LoadAll<PlaneScriptableObject>("PlaneData");
+
             GCore.Wrapper.RTTService.RegisterRTTBlockchainItemEvent(OnBlockchainItemEvent);
         }
 
         private void OnDestroy()
         {
-            ResetAnimation();
-
             GCore.Wrapper.RTTService.DeregisterRTTBlockchainItemEvent();
+
+            for (int i = 0; i < planeSkinsDataObjects.Length; i++)
+            {
+                Resources.UnloadAsset(planeSkinsDataObjects[i]);
+                planeSkinsDataObjects[i] = null;
+            }
+
+            planeSkinsDataObjects = null;
+
+            ResetAnimation();
         }
 
         private void Update()
@@ -59,7 +71,6 @@ namespace Gameframework
 #endif
             if (Input.GetKeyDown(KeyCode.B))
             {
-                //ditch and switch
                 OnDitchAndSwitchButton();
             }
         }
@@ -68,85 +79,37 @@ namespace Gameframework
         {
             if (string.IsNullOrEmpty(in_message)) return;
 
-            JsonData jsonData = JsonMapper.ToObject(in_message);
-            PlaneScriptableObject[] planeSkinsDataObjects = Resources.LoadAll<PlaneScriptableObject>("PlaneData");
-            switch (jsonData["operation"].ToString())
+            Dictionary<string, object> jsonMessage = (Dictionary<string, object>)JsonReader.Deserialize(in_message);
+            Dictionary<string, object> jsonData = (Dictionary<string, object>)jsonMessage[BrainCloudConsts.JSON_DATA];
+            Dictionary<string, object> newItemJSON = (Dictionary<string, object>)jsonData["newJSON"];
+            Dictionary<string, object> newItemData = (Dictionary<string, object>)newItemJSON["object"];
+
+            int factoryID = (int)newItemData["token_factory_id"];
+
+            GPlayerMgr.Instance.BlockchainItems.TryGetValue(factoryID, out int currentItemCount);
+
+            Action<bool> onGetBlockchainItems = (bool success) =>
             {
-                case "ITEM_EVENT": 
-                    if (jsonData["data"]["operation"].ToString() == "INS")
-                    {
-                        // Only looking for INSERT events to show that there is a new item
-                        int newItemFactoryID = (int)jsonData["data"]["newJSON"]["object"]["token_factory_id"];
+                int updatedItemCount = 0;
+                bool isInsertEvent = jsonMessage["operation"] as string == "ITEM_EVENT" && jsonData["operation"] as string == "INS";
+                bool ownsSkin = success && GPlayerMgr.Instance.BlockchainItems.TryGetValue(factoryID, out updatedItemCount);
+                if (isInsertEvent && ownsSkin && updatedItemCount > currentItemCount)
+                {
+                    newPlaneSkin = factoryID;
+                    PlaneScriptableObject planeDataEntry = planeSkinsDataObjects.Where(x => x.planeID == newPlaneSkin).FirstOrDefault();
+                    MessageImage.sprite = planeDataEntry.planeThumbnail_green;
+                    DialogImage.sprite = planeDataEntry.planeThumbnail_green;
+                    DialogMessageText.text = "New Bomber Available!";
 
-                        string suppressDuplicatesStr = GConfigManager.GetStringValue("suppressDuplicateBomberSkins");
-                        bool.TryParse(suppressDuplicatesStr, out bool suppressDuplicates);
+                    StartAnimation();
+                }
+                else if (!ownsSkin || (updatedItemCount <= 0 && currentItemCount > 0)) // Current skin is no longer on account, need to remove...
+                {
+                    GPlayerMgr.Instance.SetPlayerPlaneIDSkin(PlaneScriptableObject.DEFAULT_SKIN_ID, null); // Do remove on player too
+                }
+            };
 
-                        if (suppressDuplicates)
-                        {
-                            // Check if user already owns this new skin
-                            GCore.Wrapper.Client.Blockchain.GetBlockchainItems("default", "{}", (response, cbObject) =>
-                            {
-                                bool itemExists = false;
-
-                                JsonData blockchainData = JsonMapper.ToObject(response);
-                                JsonData items = blockchainData["data"]["response"]["items"];
-
-                                for (int i = 0; i < items.Count; i++)
-                                {
-                                    int factoryID = int.Parse(items[i]["json"]["token_factory_id"].ToString());
-
-                                    if (factoryID == newItemFactoryID)
-                                    {
-                                        itemExists = true;
-                                        break;
-                                    }
-                                }
-
-                                if (!itemExists)
-                                {
-                                    //find plane skin data with this ID
-                                    PlaneScriptableObject planeDataEntry = planeSkinsDataObjects.Where(x => x.planeID == newItemFactoryID).FirstOrDefault();
-                                    if (planeDataEntry != null)
-                                    {
-                                        newPlaneSkin = newItemFactoryID;
-                                        MessageImage.sprite = planeDataEntry.planeThumbnail_green;
-                                        DialogImage.sprite = planeDataEntry.planeThumbnail_green;
-                                        DialogMessageText.text = "New Bomber Available!";
-
-                                        StartAnimation();
-                                    }
-                                    else
-                                    {
-                                        Debug.Log("Couldn't find plane skin data with ID: " + newItemFactoryID);
-                                    }
-                                }
-
-                            });
-                        }
-                        else
-                        {
-                            //find plane skin data with this ID
-                            PlaneScriptableObject planeDataEntry = planeSkinsDataObjects.Where(x => x.planeID == newItemFactoryID).FirstOrDefault();
-                            if (planeDataEntry != null)
-                            {
-                                newPlaneSkin = newItemFactoryID;
-                                MessageImage.sprite = planeDataEntry.planeThumbnail_green;
-                                DialogImage.sprite = planeDataEntry.planeThumbnail_green;
-                                DialogMessageText.text = "New Bomber Available!";
-
-                                StartAnimation();
-                            }
-                            else
-                            {
-                                Debug.Log("Couldn't find plane skin data with ID: " + newItemFactoryID);
-                            }
-                        }
-                    }
-                    return;
-                default:
-                    Debug.Log("(Blockchain Refresh received - NEED TO SHOW MESSAGE)");
-                    return;
-            }
+            GPlayerMgr.Instance.GetBlockchainItems(onGetBlockchainItems);
         }
 
         private void ResetAnimation()
@@ -174,7 +137,7 @@ namespace Gameframework
             Debug.Log($"Swapping to Plane Skin ID: {newPlaneSkin}");
         }
 
-        //Gets called by an animation event when the notification disappears
+        // Gets called by an animation event when the notification disappears
         public void DisablePlaneSwitching()
         {
             canSwitchPlanes = false;

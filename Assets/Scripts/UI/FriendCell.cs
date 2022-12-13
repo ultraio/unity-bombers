@@ -86,22 +86,17 @@ namespace BrainCloudUNETExample
         {
             Dictionary<string, object> playerExtra = new Dictionary<string, object>();
             playerExtra.Add("cxId", GCore.Wrapper.Client.RTTConnectionID);
-            playerExtra.Add(GBomberRTTConfigManager.JSON_GOLD_WINGS, GPlayerMgr.Instance.GetCurrencyBalance(GBomberRTTConfigManager.CURRENCY_GOLD_WINGS) > 0 ? true : false);
+            playerExtra.Add(GBomberRTTConfigManager.JSON_GOLD_WINGS,
+                            GPlayerMgr.Instance.GetCurrencyBalance(GBomberRTTConfigManager.CURRENCY_GOLD_WINGS) > 0 ? true : false);
 
-            int userPlaneID = 0;
-            GCore.Wrapper.EntityService.GetSingleton("PlaneSkin", (string responseData, object cbObject) =>
+            GPlayerMgr.Instance.GetPlayerPlaneIDSkin((int planeId) =>
             {
-                JsonData jsonData = JsonMapper.ToObject(responseData);
-                JsonData entry = jsonData["data"];
-
-                if (entry != null)
-                    userPlaneID = int.Parse(entry["data"][GBomberRTTConfigManager.PLANE_SKIN_ID].ToString());
-
-                playerExtra.Add(GBomberRTTConfigManager.PLANE_SKIN_ID, userPlaneID);
+                playerExtra.Add(GBomberRTTConfigManager.PLANE_SKIN_ID, planeId);
 
                 GCore.Wrapper.LobbyService.JoinLobby(m_data.Presence.LobbyId, true, playerExtra, "");
 
                 GStateManager.Instance.PushSubState(JoiningGameSubState.STATE_NAME);
+
                 GCore.Wrapper.RTTService.RegisterRTTLobbyCallback(BombersNetworkManager.Instance.LobbyCallback);
             });
         }
