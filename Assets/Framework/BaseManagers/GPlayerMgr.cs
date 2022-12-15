@@ -268,14 +268,14 @@ namespace Gameframework
                     planeID = int.Parse(entry["data"][GBomberRTTConfigManager.PLANE_SKIN_ID].ToString());
                 }
 
-                onPlayerSkinRetrieved?.Invoke(BlockchainItems.ContainsKey(planeID) ? planeID : PlaneScriptableObject.DEFAULT_SKIN_ID);
+                SetPlayerPlaneIDSkin(BlockchainItems.ContainsKey(planeID) ? planeID : PlaneScriptableObject.DEFAULT_SKIN_ID, onPlayerSkinRetrieved);
             };
 
             FailureCallback onFailure = (int status, int reasonCode, string jsonError, object cbObject) =>
             {
                 Debug.LogError($"Couldn't get plane ID of user: {status} {reasonCode}");
 
-                onPlayerSkinRetrieved?.Invoke(PlaneScriptableObject.DEFAULT_SKIN_ID);
+                SetPlayerPlaneIDSkin(PlaneScriptableObject.DEFAULT_SKIN_ID, onPlayerSkinRetrieved);
             };
 
             GCore.Wrapper.EntityService.GetSingleton(GBomberRTTConfigManager.SINGLETON_PLANE_SKIN_ID, onSuccess, onFailure);

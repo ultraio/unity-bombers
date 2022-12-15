@@ -21,7 +21,10 @@ namespace BrainCloudUNETExample
 
             base.Start();
 
-            GPlayerMgr.Instance.GetBlockchainItems(GetUpdatedBlockchainItems);
+            GPlayerMgr.Instance.GetBlockchainItems((bool success) =>
+            {
+                GPlayerMgr.Instance.GetPlayerPlaneIDSkin((x) => GetUpdatedBlockchainItems(success));
+            });
         }
 
         #endregion

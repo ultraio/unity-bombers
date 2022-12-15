@@ -15544,12 +15544,14 @@ PrefabInstance:
     - target: {fileID: 2164515459686760116, guid: d37e346f9b14aa043bdc00de20d3c9df,
         type: 3}
       propertyPath: BlockchainTestData
-      value: "{ \t\"service\": \"blockchain\", \t\"operation\": \"ITEM_EVENT\", \t\"data\":
-        { \t\t\"operation\": \"INS\", \t\t\"oldJSON\": { \t\t\t\"object\": null,
-        \t\t\t\"error\": null \t\t}, \t\t\"newJSON\": { \t\t\t\"object\": { \t\t\t\t\"id\":
-        72, \t\t\t\t\"mint_date\": \"2022-09-27T12:41:19\", \t\t\t\t\"serial_number\":
-        4, \t\t\t\t\"token_factory_id\": 22 \t\t\t}, \t\t\t\"error\": null \t\t}
-        \t} }"
+      value: "{\r\n    \"service\":\"blockchain\",\r\n    \"operation\":\"ITEM_EVENT\",\r\n   
+        \"data\":{\r\n        \"operation\":\"REM\",\r\n        \"oldJSON\":{\r\n           
+        \"object\":{\r\n                \"id\":0,\r\n                \"mint_date\":\"1970-01-01T00:00:00\",\r\n               
+        \"serial_number\":0,\r\n                \"token_factory_id\":22\r\n           
+        },\r\n            \"error\":null\r\n        },\r\n        \"newJSON\":{\r\n           
+        \"object\":{\r\n                \"id\":0,\r\n                \"mint_date\":\"1970-01-01T00:00:00\",\r\n               
+        \"serial_number\":0,\r\n                \"token_factory_id\":22\r\n           
+        },\r\n            \"error\":null\r\n        }\r\n    }\r\n}"
       objectReference: {fileID: 0}
     - target: {fileID: 2164515459686760117, guid: d37e346f9b14aa043bdc00de20d3c9df,
         type: 3}

@@ -1,8 +1,6 @@
-using BrainCloud.JsonFx.Json;
-using BrainCloudUNETExample.Game;
-using System.Collections.Generic;
-using System;
+using BrainCloud.LitJson;
 using System.Linq;
+using System.Numerics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,29 +23,30 @@ namespace Gameframework
         [SerializeField] private TextMeshProUGUI DialogMessageText = null;
 
 #if UNITY_EDITOR
-        [Header("Editor Only")]
+        [Header("Editor Only"), TextArea(1, 100)]
         [SerializeField] private string BlockchainTestData = null;
 #endif
 
-        private GameManager gameManager = null;
-        private int newPlaneSkin = -1;
         private bool canSwitchPlanes = false;
+        private int newPlaneIDSkin = PlaneScriptableObject.DEFAULT_SKIN_ID;
+        private BrainCloudUNETExample.Game.GameManager gameManager = null;
         PlaneScriptableObject[] planeSkinsDataObjects = null;
 
         private void Start()
         {
             ResetAnimation();
 
-            if (gameManager == null) gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+            if (gameManager == null) gameManager = GameObject.Find("GameManager")
+                                     .GetComponent<BrainCloudUNETExample.Game.GameManager>();
 
             planeSkinsDataObjects = Resources.LoadAll<PlaneScriptableObject>("PlaneData");
 
-            GCore.Wrapper.RTTService.RegisterRTTBlockchainItemEvent(OnBlockchainItemEvent);
+            GCore.Wrapper?.RTTService.RegisterRTTBlockchainItemEvent(OnBlockchainItemEvent);
         }
 
         private void OnDestroy()
         {
-            GCore.Wrapper.RTTService.DeregisterRTTBlockchainItemEvent();
+            GCore.Wrapper?.RTTService.DeregisterRTTBlockchainItemEvent();
 
             for (int i = 0; i < planeSkinsDataObjects.Length; i++)
             {
@@ -79,37 +78,59 @@ namespace Gameframework
         {
             if (string.IsNullOrEmpty(in_message)) return;
 
-            Dictionary<string, object> jsonMessage = (Dictionary<string, object>)JsonReader.Deserialize(in_message);
-            Dictionary<string, object> jsonData = (Dictionary<string, object>)jsonMessage[BrainCloudConsts.JSON_DATA];
-            Dictionary<string, object> newItemJSON = (Dictionary<string, object>)jsonData["newJSON"];
-            Dictionary<string, object> newItemData = (Dictionary<string, object>)newItemJSON["object"];
+            JsonData jsonData = JsonMapper.ToObject(in_message);
 
-            int factoryID = (int)newItemData["token_factory_id"];
+            int factoryID = PlaneScriptableObject.DEFAULT_SKIN_ID;
+            string eventType = jsonData["operation"] != null ? (string)jsonData["operation"] : string.Empty;
+            if (!string.IsNullOrEmpty(eventType) && eventType == "ITEM_EVENT")
+            {
+                eventType = (string)jsonData["data"]["operation"];
+
+                switch(eventType)
+                {
+                    case "INS":
+                    case "UDP":
+                        factoryID = (int)jsonData["data"]["newJSON"]["object"]["token_factory_id"];
+                        break;
+                    case "REM":
+                        factoryID = (int)jsonData["data"]["oldJSON"]["object"]["token_factory_id"];
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (planeSkinsDataObjects.Where(x => x.planeID == factoryID).FirstOrDefault() == null)
+            {
+                return; // Skin Asset doesn't exist so let's exit...
+            }
 
             GPlayerMgr.Instance.BlockchainItems.TryGetValue(factoryID, out int currentItemCount);
 
-            Action<bool> onGetBlockchainItems = (bool success) =>
+            GPlayerMgr.Instance.GetBlockchainItems((bool success) =>
             {
-                int updatedItemCount = 0;
-                bool isInsertEvent = jsonMessage["operation"] as string == "ITEM_EVENT" && jsonData["operation"] as string == "INS";
-                bool ownsSkin = success && GPlayerMgr.Instance.BlockchainItems.TryGetValue(factoryID, out updatedItemCount);
-                if (isInsertEvent && ownsSkin && updatedItemCount > currentItemCount)
+                GPlayerMgr.Instance.GetPlayerPlaneIDSkin((int planeID) =>
                 {
-                    newPlaneSkin = factoryID;
-                    PlaneScriptableObject planeDataEntry = planeSkinsDataObjects.Where(x => x.planeID == newPlaneSkin).FirstOrDefault();
-                    MessageImage.sprite = planeDataEntry.planeThumbnail_green;
-                    DialogImage.sprite = planeDataEntry.planeThumbnail_green;
-                    DialogMessageText.text = "New Bomber Available!";
+                    int updatedItemCount = currentItemCount;
+                    bool isInsertEvent = eventType == "INS" || eventType == "UDP";
+                    bool ownsSkin = success && GPlayerMgr.Instance.BlockchainItems.TryGetValue(factoryID, out updatedItemCount);
+                    if (isInsertEvent && ownsSkin && planeID != factoryID && updatedItemCount > currentItemCount)
+                    {
+                        newPlaneIDSkin = factoryID;
+                        PlaneScriptableObject planeDataEntry = planeSkinsDataObjects.Where(x => x.planeID == factoryID).FirstOrDefault();
+                        MessageImage.sprite = planeDataEntry.planeThumbnail_green;
+                        DialogImage.sprite = planeDataEntry.planeThumbnail_green;
+                        DialogMessageText.text = "New Bomber Available!";
 
-                    StartAnimation();
-                }
-                else if (!ownsSkin || (updatedItemCount <= 0 && currentItemCount > 0)) // Current skin is no longer on account, need to remove...
-                {
-                    GPlayerMgr.Instance.SetPlayerPlaneIDSkin(PlaneScriptableObject.DEFAULT_SKIN_ID, null); // Do remove on player too
-                }
-            };
-
-            GPlayerMgr.Instance.GetBlockchainItems(onGetBlockchainItems);
+                        StartAnimation();
+                    }
+                    else if (planeID == factoryID && (!ownsSkin || (updatedItemCount <= 0 && currentItemCount > 0))) // Current skin is no longer on account, need to remove...
+                    {
+                        newPlaneIDSkin = PlaneScriptableObject.DEFAULT_SKIN_ID;
+                        GPlayerMgr.Instance.SetPlayerPlaneIDSkin(newPlaneIDSkin, gameManager.SilentSwitchPlaneSkin); // Update skin to default for everyone
+                    }
+                });
+            });
         }
 
         private void ResetAnimation()
@@ -126,21 +147,21 @@ namespace Gameframework
             NewBombersAnimator.SetTrigger(PLAY_ANIMATION);
         }
 
+        // Gets called by an animation event when the notification disappears
+        public void DisablePlaneSwitching()
+        {
+            canSwitchPlanes = false;
+        }
+        
         public void OnDitchAndSwitchButton()
         {
             if (!canSwitchPlanes) return;
 
             ResetAnimation();
 
-            gameManager.DitchAndSwitchPlaneSkin(newPlaneSkin);
+            gameManager.DitchAndSwitchPlaneSkin(newPlaneIDSkin);
 
-            Debug.Log($"Swapping to Plane Skin ID: {newPlaneSkin}");
-        }
-
-        // Gets called by an animation event when the notification disappears
-        public void DisablePlaneSwitching()
-        {
-            canSwitchPlanes = false;
+            Debug.Log($"Swapping to Plane Skin ID: {newPlaneIDSkin}");
         }
     }
 }

@@ -16,11 +16,6 @@ namespace BrainCloudUNETExample
         public static string SYSTEM_MESSAGE = "SYSTEM_MESSAGE";
         public static string STATE_NAME = "mainMenuState";
 
-#if UNITY_EDITOR
-        [SerializeField]
-        private string TestBlockchainData;
-#endif
-
         [SerializeField]
         private PlayerRankIcon PlayerRankIcon = null;
 
@@ -86,6 +81,11 @@ namespace BrainCloudUNETExample
 
         [SerializeField]
         private TMP_InputField ChatInputField = null;
+
+#if UNITY_EDITOR
+        [Header("Editor Only"), SerializeField, TextArea(1, 100)]
+        private string TestBlockchainData;
+#endif
 
 #region BaseState
         protected override void Start()
@@ -784,62 +784,64 @@ namespace BrainCloudUNETExample
 
         private void OnBlockchainItemEvent(string in_message)
         {
+            HangarSubState getHangarSubState()
+            {
+                if (GStateManager.Instance.CurrentSubState != null &&
+                    GStateManager.Instance.CurrentSubState.StateInfo.StateId == HangarSubState.STATE_NAME)
+                {
+                    return GStateManager.Instance.CurrentSubState as HangarSubState;
+                }
+
+                return null;
+            }
+
             if (string.IsNullOrEmpty(in_message)) return;
 
-            Dictionary<string, object> jsonMessage = (Dictionary<string, object>)JsonReader.Deserialize(in_message);
-            Dictionary<string, object> jsonData = (Dictionary<string, object>)jsonMessage[BrainCloudConsts.JSON_DATA];
-            Dictionary<string, object> newItemJSON = (Dictionary<string, object>)jsonData["newJSON"];
-            Dictionary<string, object> newItemData = (Dictionary<string, object>)newItemJSON["object"];
+            BrainCloud.LitJson.JsonData jsonData = BrainCloud.LitJson.JsonMapper.ToObject(in_message);
 
-            int factoryID = (int)newItemData["token_factory_id"];
-
-            HangarSubState hangerSubState = null;
-            if(GStateManager.Instance.CurrentSubState != null &&
-               GStateManager.Instance.CurrentSubState.StateInfo.StateId == HangarSubState.STATE_NAME)
+            int factoryID = PlaneScriptableObject.DEFAULT_SKIN_ID;
+            string eventType = jsonData["operation"] != null ? (string)jsonData["operation"] : string.Empty;
+            if (!string.IsNullOrEmpty(eventType) && eventType == "ITEM_EVENT")
             {
-                hangerSubState = GStateManager.Instance.CurrentSubState as HangarSubState;
+                eventType = (string)jsonData["data"]["operation"];
+
+                switch (eventType)
+                {
+                    case "INS":
+                    case "UDP":
+                        factoryID = (int)jsonData["data"]["newJSON"]["object"]["token_factory_id"];
+                        break;
+                    case "REM":
+                        factoryID = (int)jsonData["data"]["oldJSON"]["object"]["token_factory_id"];
+                        break;
+                    default:
+                        break;
+                }
             }
 
             GPlayerMgr.Instance.BlockchainItems.TryGetValue(factoryID, out int currentItemCount);
 
-            Action<bool> onGetBlockchainItems = null;
-            switch (jsonMessage["operation"] as string)
+            GStateManager.Instance.EnableLoadingSpinner(getHangarSubState() != null);
+
+            GPlayerMgr.Instance.GetBlockchainItems((bool success) =>
             {
-                case "ITEM_EVENT":
-                    if (jsonData["operation"] as string == "INS") // Only looking for INSERT events to show that there is a new item
-                    {
-                        onGetBlockchainItems = (bool success) =>
-                        {
-                            if (hangerSubState != null)
-                            {
-                                hangerSubState.GetUpdatedBlockchainItems(success);
-                            }
-                            else if(GPlayerMgr.Instance.BlockchainItems.TryGetValue(factoryID, out int updatedItemCount) &&
-                                    updatedItemCount > currentItemCount)
-                            {
-                                m_newBlockchainItems++;
-                                StoreBadgeText.text = m_newBlockchainItems.ToString();
-                                StoreBadge.SetActive(true);
-                                StartCoroutine(ShowDisplayDialog());
-                            }
-                        };
-                    }
-                    break;
-                default:
-                    Debug.Log($"Blockchain Refresh Received - Operation: {jsonMessage["operation"] as string}");
-                    onGetBlockchainItems = (bool success) =>
-                    {
-                        if (hangerSubState != null)
-                        {
-                            hangerSubState.GetUpdatedBlockchainItems(success);
-                        }
-                    };
-                    break;
-            }
+                HangarSubState hangar = getHangarSubState();
 
-            GStateManager.Instance.EnableLoadingSpinner(hangerSubState != null);
-
-            GPlayerMgr.Instance.GetBlockchainItems(onGetBlockchainItems);
+                int updatedItemCount = currentItemCount;
+                bool isInsertEvent = eventType == "INS" || eventType == "UDP";
+                bool ownsSkin = success && GPlayerMgr.Instance.BlockchainItems.TryGetValue(factoryID, out updatedItemCount);
+                if (hangar != null)
+                {
+                    hangar.GetUpdatedBlockchainItems(success);
+                }
+                else if (isInsertEvent && ownsSkin && updatedItemCount > currentItemCount)
+                {
+                    m_newBlockchainItems++;
+                    StoreBadgeText.text = m_newBlockchainItems.ToString();
+                    StoreBadge.SetActive(true);
+                    StartCoroutine(ShowDisplayDialog());
+                }
+            });
         }
 
         private void ResetDisplayDialog()

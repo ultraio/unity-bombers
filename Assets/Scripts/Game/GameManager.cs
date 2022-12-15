@@ -1794,28 +1794,29 @@ namespace BrainCloudUNETExample.Game
         }
 
         //[Command]
-        public void CmdSwitchPlayerSkin(short aPlayer, short newSkinID)
+        public void CmdSwitchPlayerSkin(short aPlayer, short newSkinID, bool destroyPlayer)
         {
             if (aPlayer == BombersNetworkManager.LocalPlayer.NetId)
             {
                 // If its the local player update the singleton representing skin choice
-                GPlayerMgr.Instance.GetPlayerPlaneIDSkin((int id) => GPlayerMgr.Instance.SetPlayerPlaneIDSkin(id, null));
+                GPlayerMgr.Instance.SetPlayerPlaneIDSkin(newSkinID, null);
             }
 
-            RpcSwitchPlayerSkin(aPlayer, newSkinID);
-            SendSkinChange(aPlayer, newSkinID);
+            RpcSwitchPlayerSkin(aPlayer, newSkinID, destroyPlayer);
+            SendSkinChange(aPlayer,
+                           destroyPlayer ? (short)(0b100000000000000 | newSkinID) : newSkinID); // Store destroy player bool in highest bit in data short
         }
 
         //[ClientRpc]
-        public void RpcSwitchPlayerSkin(short aPlayer, short newSkinID)
+        public void RpcSwitchPlayerSkin(short aPlayer, short newSkinID, bool destroyPlayer)
         {
-            //find the plane who is switching skins
             BombersPlayerController playerController = BombersNetworkManager.LocalPlayer;
             if(aPlayer == playerController.NetId)
             {
-                //avoid looping other players if it's local player changing skins
-                playerController.m_playerPlane.SetPlaneSkin(newSkinID);
-                playerController.SuicidePlayer();
+                // Avoid looping other players if it's local player changing skins
+                playerController.m_playerPlane.SetPlaneIDSkin(newSkinID);
+
+                if(destroyPlayer) playerController.SuicidePlayer();
             }
             else
             {
@@ -1823,8 +1824,9 @@ namespace BrainCloudUNETExample.Game
                 {
                     if (member.PlayerController.NetId == aPlayer)
                     {
-                        member.PlayerController.m_playerPlane.SetPlaneSkin(newSkinID);
-                        member.PlayerController.SuicidePlayer();
+                        member.PlayerController.m_playerPlane.SetPlaneIDSkin(newSkinID);
+
+                        if (destroyPlayer) member.PlayerController.SuicidePlayer();
                     }
                 }
             }
@@ -1918,11 +1920,11 @@ namespace BrainCloudUNETExample.Game
             }
         }
 
-        public void DitchAndSwitchPlaneSkin(int newSkinID)
-        {
-            short playerID = BombersNetworkManager.LocalPlayer.NetId;
-            CmdSwitchPlayerSkin(playerID, (short)newSkinID);
-        }
+        public void DitchAndSwitchPlaneSkin(int newSkinID) => 
+            CmdSwitchPlayerSkin(BombersNetworkManager.LocalPlayer.NetId, (short)newSkinID, true);
+
+        public void SilentSwitchPlaneSkin(int newSkinID) =>
+            CmdSwitchPlayerSkin(BombersNetworkManager.LocalPlayer.NetId, (short)newSkinID, false);
 
         //[ClientRpc]
         public void RpcDestroyPlayerPlane(short aVictim, short aShooter)

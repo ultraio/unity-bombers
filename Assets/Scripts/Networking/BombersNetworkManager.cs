@@ -1024,7 +1024,13 @@ namespace BrainCloudUNETExample
                                 short netId = Convert.ToInt16(jsonMessage[BaseNetworkBehavior.NET_ID]);
                                 short data = Convert.ToInt16(jsonMessage[BaseNetworkBehavior.DATA]);
 
-                                gMan.RpcSwitchPlayerSkin(netId, data);
+                                bool destroyPlayer = (0b100000000000000 & data) > 0; // Get if player should be destroyed from highest bit
+                                if (destroyPlayer)
+                                {
+                                    data ^= 0b100000000000000; // Removes flag to get proper skin ID
+                                }
+
+                                gMan.RpcSwitchPlayerSkin(netId, data, destroyPlayer);
                             }
                         }
                         break;

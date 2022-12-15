@@ -1,9 +1,7 @@
-﻿using UnityEngine;
+﻿using Gameframework;
 using System.Collections.Generic;
-using Gameframework;
-using System;
-using BrainCloud.LitJson;
-using System.IO;
+using System.Linq;
+using UnityEngine;
 
 namespace BrainCloudUNETExample.Game
 {
@@ -36,6 +34,7 @@ namespace BrainCloudUNETExample.Game
         public Transform m_planeSkinContainer;
 
         public int m_health = 0;
+        private bool m_updatePlaneBody = false;
         private GameObject m_gunCharge;
 
         private bool m_isBankingRight = false;
@@ -76,6 +75,7 @@ namespace BrainCloudUNETExample.Game
 
         public BombersPlayerController PlayerController { get; private set; }
         public GameObject SmartsComponent { get; private set; }
+
         override protected void Start()
         {
             m_velocityMaxMagnitude = GConfigManager.GetFloatValue("MaxAcceleration");
@@ -92,6 +92,9 @@ namespace BrainCloudUNETExample.Game
             if (PlayerController.MemberInfo == null)
                 PlayerController.MemberInfo = BombersNetworkManager.LobbyInfo.GetMemberWithProfileId(PlayerController.ProfileId);
 
+            m_updatePlaneBody = true;
+            UpdatePlaneBody();
+
             textMesh.text = PlayerController.m_displayName;
             if (PlayerController.IsLocalPlayer)
             {
@@ -102,14 +105,6 @@ namespace BrainCloudUNETExample.Game
             {
                 m_lastPositions[i] = new PlaneVector(transform.position, transform.up);
             }
-
-            string teamBomberPath = "";
-            bool bHasGoldWings = false;
-
-            /*
-            if (PlayerController.MemberInfo.ExtraData.ContainsKey(GBomberRTTConfigManager.JSON_GOLD_WINGS))
-                bHasGoldWings = (bool)PlayerController.MemberInfo.ExtraData[GBomberRTTConfigManager.JSON_GOLD_WINGS];
-            */
 
             if (PlayerController.m_team == 1)
             {
@@ -125,9 +120,6 @@ namespace BrainCloudUNETExample.Game
             SmartsComponent = PlayerController.transform.FindDeepChild("smartsComponent").gameObject;
             SmartsComponent.SetActive(true);
             SmartsComponent.layer = PlayerController.m_team == 1 ? 21 : 22; // debug collisions
-
-            //Set skin
-            SetPlaneSkin();
 
             m_gunCharge = transform.FindDeepChild("GunCharge").gameObject;
             m_gunCharge.GetComponent<Animator>().speed = 1 / GConfigManager.GetFloatValue("MultishotDelay");
@@ -150,47 +142,40 @@ namespace BrainCloudUNETExample.Game
             base.Start();
         }
 
-        public void SetPlaneSkin(int skinID = -1)
+        public void SetPlaneIDSkin(int skinID)
         {
-            if(skinID != -1)
-            {
-                PlayerController.MemberInfo.PlaneSkinID = skinID;
-            }
+            m_updatePlaneBody = PlayerController.MemberInfo.PlaneSkinID != skinID;
+            PlayerController.MemberInfo.PlaneSkinID = skinID;
+        }
 
-            string teamBomberPath;
+        public void UpdatePlaneBody()
+        {
+            if (!m_updatePlaneBody) return;
 
-            if (PlayerController.m_team == 1)
-            {
-                teamBomberPath = "Bomber01";
-            }
-            else
-            {
-                teamBomberPath = "Bomber02";
-            }
+            Debug.Log($"{gameObject.name} changing skin to ID: {PlayerController.MemberInfo.PlaneSkinID}");
 
-            GameObject playerPlaneObject = (GameObject)Resources.Load("Prefabs/Game/" + teamBomberPath);
+            m_updatePlaneBody = false;
 
-            foreach (PlaneScriptableObject planeData in Resources.LoadAll("PlaneData", typeof(PlaneScriptableObject)))
+            string teamBomberPath = PlayerController.m_team == 1 ? "Bomber01" : "Bomber02";
+
+            GameObject playerPlaneObject = Resources.Load("Prefabs/Game/" + teamBomberPath) as GameObject;
+            PlaneScriptableObject[] planeSkinsDataObjects = Resources.LoadAll<PlaneScriptableObject>("PlaneData");
+            PlaneScriptableObject selectedPlaneData = planeSkinsDataObjects.Where(x => x.planeID == PlaneScriptableObject.DEFAULT_SKIN_ID).FirstOrDefault();
+            foreach (PlaneScriptableObject planeData in planeSkinsDataObjects)
             {
                 if (planeData.planeID == PlayerController.MemberInfo.PlaneSkinID)
                 {
-                    if (PlayerController.m_team == 1)
-                    {
-                        playerPlaneObject = planeData.planeModel_green;
-                    }
-                    else
-                    {
-                        playerPlaneObject = planeData.planeModel_red;
-                    }
-
+                    selectedPlaneData = planeData;
                     break;
                 }
             }
 
-            //if plane graphic already exists remove it
-            if(m_planeSkinContainer.childCount > 0)
+            playerPlaneObject = PlayerController.m_team == 1 ? selectedPlaneData.planeModel_green : selectedPlaneData.planeModel_red;
+
+            // If plane graphic already exists remove it
+            if (m_planeSkinContainer.childCount > 0)
             {
-                foreach(Transform t in m_planeSkinContainer)
+                foreach (Transform t in m_planeSkinContainer)
                 {
                     Destroy(t.gameObject);
                 }
@@ -217,9 +202,18 @@ namespace BrainCloudUNETExample.Game
 
         private float m_syncTransformationDelay = 0.0f;
         private const float SYNC_TRANSFORM_DELAY = 0.5f;
-        void Update()
+        private void Update()
         {
-            
+            if (PlayerController == null && PlayerController.MemberInfo == null)
+            {
+                return;
+            }
+            else if (m_updatePlaneBody && m_health <= 0)
+            {
+                UpdatePlaneBody();
+                return;
+            }
+
             // update contrails based of alive or dead
             if (m_leftContrail.gameObject != null) m_leftContrail.gameObject.SetActive(PlayerController.m_planeActive);
             if (m_rightContrail.gameObject != null) m_rightContrail.gameObject.SetActive(PlayerController.m_planeActive);
@@ -345,7 +339,7 @@ namespace BrainCloudUNETExample.Game
             }
         }
 
-        void FixedUpdate()
+        private void FixedUpdate()
         {
             if (!IsLocalPlayer && (IsServerBot && !IsServer))
             {
@@ -409,6 +403,7 @@ namespace BrainCloudUNETExample.Game
             m_lastPositions[0] = new PlaneVector(transform.position, direction);
 
         }
+
         private Rigidbody m_rigidBody = null;
         private float m_velocityMaxMagnitude = 30.0f;
         public void Accelerate(float aAcceleration, float aSpeedMultiplier)
@@ -420,7 +415,7 @@ namespace BrainCloudUNETExample.Game
             }
         }
 
-        void LateUpdate()
+        private void LateUpdate()
         {
             if (!IsLocalPlayer && (IsServerBot && !IsServer))
             {
@@ -460,7 +455,6 @@ namespace BrainCloudUNETExample.Game
             transform.localEulerAngles = eulerAngles;
         }
     }
-
 
     public class PlaneVector
     {
