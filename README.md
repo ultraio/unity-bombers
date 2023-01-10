@@ -14,7 +14,7 @@ The **Ultra Auth Plugin package** included in this example app via the Package M
 
 2. Configure `Ultra > Settings` to use the correct **Authentication Url** and **Client Id**.
 
-You will not be able to log into the app until both [BrainCloudSettings](https://github.com/getbraincloud/braincloud-csharp) and UltraSettings are configured properly. Please read the documentation for the brainCloud Unity/Csharp plugin and the Ultra Auth Plugin on their official distribution platforms for more in-depth instructions.
+You will not be able to log into the app until both **BrainCloudSettings** and **UltraSettings** are configured properly. Please read the documentation for the [brainCloud Unity/Csharp plugin](https://github.com/getbraincloud/braincloud-csharp) and the Ultra Auth Plugin on their official distribution platforms for more in-depth instructions.
 
 All other **Player Settings** in Unity's **Build Settings** are set to what is recommended for this example app. **Windows** and **MacOS** are currently the only platforms supported.
 
@@ -27,7 +27,7 @@ Plane skins are dynamically loaded from `Resources > PlaneData` as **PlaneScript
 ### PlaneData Fields
 
 | Field | Description |
-| --- | --- |
+| ------------------------------ | --- |
 | int planeID | This should match the **token_factory_id** of the NFT blockchain item and should be a positive number. Do not use **0** as it is reserved for the Default plane skin. |
 | GameObject planeModel_green | The prefab that will be loaded for the player when they're on the Green Team. This prefab should be located under `Resources > Prefabs > Game`. |
 | GameObject planeModel_red | The prefab that will be loaded for the player when they're on the Red Team. This prefab should be located under `Resources > Prefabs > Game`. |
