@@ -1,9 +1,7 @@
 ﻿using Gameframework;
 using BrainCloud;
 using BrainCloud.Common;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 
 namespace BrainCloudUNETExample
@@ -12,8 +10,9 @@ namespace BrainCloudUNETExample
     {
         public static string STATE_NAME = "connectingSubState";
 
-        [SerializeField]
-        private GameObject Panel = null;
+        [SerializeField] private GameObject Panel = null;
+        [SerializeField] private GameObject LoadingSpinner = null;
+        [SerializeField] private GameObject LoadingMessage = null;
 
         private static string ms_instructionText = "";
         private static string ms_buttonText = "";
@@ -42,11 +41,16 @@ namespace BrainCloudUNETExample
         protected override void Start()
         {
             _stateInfo = new StateInfo(STATE_NAME, this);
+
             base.Start();
 
+            Panel.SetActive(false);
+            LoadingSpinner.SetActive(true);
+            LoadingMessage.SetActive(false);
+
+            // Init Ultra
             if (!Ultraio.Ultra.Client.Initialized)
             {
-                //init ultra
                 UltraManager.singleton.OnUltraLoginSuccess += (string username, string token) =>
                 {
                     SuccessCallback successCB = (response, cbObject) =>
@@ -73,18 +77,32 @@ namespace BrainCloudUNETExample
                     Debug.Log("Ultra login failed: " + error);
                     HudHelper.DisplayMessageDialog("AUTHENTICATION ERROR", "PLEASE MAKE SURE YOU HAVE ACCESS TO ULTRA ENDPOINTS", "TRY AGAIN", () =>
                     {
-                        LaunchBrowserLogin();
+                        HandleUltraLogin();
                     });
                 };
 
-                LaunchBrowserLogin();
+                HandleUltraLogin();
             }
         }
 
-        public void LaunchBrowserLogin()
+        public void HandleUltraLogin()
         {
+            if(UltraManager.singleton.UseBrowser)
+            {
+                Panel.SetActive(true);
+                LoadingSpinner.SetActive(false);
+                LoadingMessage.SetActive(false);
+            }
+            else
+            {
+                Panel.SetActive(false);
+                LoadingSpinner.SetActive(true);
+                LoadingMessage.SetActive(true);
+            }
+
             UltraManager.singleton.Init();
         }
+
         override public void ExitSubState()
         {
             MainMenuState menu = GStateManager.Instance.CurrentState as MainMenuState;

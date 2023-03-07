@@ -1,27 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Ultraio;
 using Gameframework;
-using BrainCloud;
-using BrainCloud.Common;
 using System;
+using Ultraio;
+using UnityEngine;
 
 public class UltraManager : SingletonBehaviour<UltraManager>
 {
+    [SerializeField] private bool UseBrowserLogin = false;
+
     public Action<string, string> OnUltraLoginSuccess;
     public Action<string> OnUltraLoginFailure;
 
-    private void Start()
+    public bool UseBrowser
     {
-        Ultra.UseBrowser = true;
+        get => Ultra.UseBrowser; set => Ultra.UseBrowser = value;
+    }
+
+    public override void Awake()
+    {
+        base.Awake();
+
+        UseBrowser = UseBrowserLogin;
     }
 
     public void Init()
     {
         Ultra.Init(OnInitSuccess, OnInitFailure);
     }
-
 
     void OnInitSuccess(string username, string idToken)
     {

@@ -15,6 +15,10 @@ namespace Ultraio
         {
             get { return configuration.clientId; }
         }
+        public static string ApplicationProtocol
+        {
+            get { return configuration.applicationProtocol; }
+        }
 
         static PluginConfiguration()
         {

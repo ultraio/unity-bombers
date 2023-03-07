@@ -50,7 +50,7 @@ namespace Ultraio
 
         private async void OnAuthenticationSuccess(UltraToken ultraToken)
         {
-            _authenticationFlow.AuthenticationSuccessed -= OnAuthenticationSuccess;
+            UnregisterAuthenticationCallbacks();
             string idToken = ultraToken.id_token;
             _userInfo = await _authenticationFlow.GetUserInfo();
             InitializationSucceeded(_userInfo.preferred_username, idToken);
@@ -58,8 +58,13 @@ namespace Ultraio
 
         private void OnAuthenticationFailure(UltraError error)
         {
-            _authenticationFlow.AuthenticationFailed -= OnAuthenticationFailure;
+            UnregisterAuthenticationCallbacks();
             InitializationFailed(error);
+        }
+
+        private void UnregisterAuthenticationCallbacks() {
+            _authenticationFlow.AuthenticationSuccessed -= OnAuthenticationSuccess;
+            _authenticationFlow.AuthenticationFailed -= OnAuthenticationFailure;
         }
     }
 }

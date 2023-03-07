@@ -55,6 +55,7 @@ namespace Ultraio
         {
             Init(PluginConfiguration.AuthenticationUrl,
                 PluginConfiguration.ClientId,
+                PluginConfiguration.ApplicationProtocol,
                 successCallback,
                 failureCallback);
         }
@@ -64,11 +65,12 @@ namespace Ultraio
         /// </summary>
         /// <param name="authUrl">The authentication server URL (OIDC compliant supporting the device grant flow)</param>
         /// <param name="clientId">Client id of the application</param>
+        /// <param name="applicationProtocol">The deeplink protocol used to communicate with the desktop application (use ultra for production)</param>
         /// <param name="successCallback">Init success callback</param>
         /// <param name="failureCallback">Init failure callback</param>
-        public static void Init(string authUrl, string clientId, InitSucceededHandler successCallback = null, InitFailedHandler failureCallback = null)
+        public static void Init(string authUrl, string clientId, string applicationProtocol, InitSucceededHandler successCallback = null, InitFailedHandler failureCallback = null)
         {
-            var authenticationFlow = new OAuthDeviceFlow(authUrl, clientId, UseBrowser);
+            var authenticationFlow = new OAuthDeviceFlow(authUrl, clientId, applicationProtocol, UseBrowser);
             if (successCallback != null)
             {
                 Client.InitializationSucceeded += successCallback;

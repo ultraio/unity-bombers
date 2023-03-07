@@ -6,15 +6,19 @@ Based off the original [BombersRTT](https://github.com/getbraincloud/examples-un
 
 ### Ultra Auth Plugin Package
 
-The **Ultra Auth Plugin package** included in this example app via the Package Manager is not meant for redistribution and cannot be used in a commercial platform. Please download the **Ultra Auth Plugin** from its official distribution platform and follow the official instructions to add it to your Unity app.
+The **Ultra Auth Plugin package** included in this example app via the Package Manager is not meant for redistribution and cannot be used in a commercial platform. Please download the **Ultra Auth Plugin** from its official distribution platform and follow the official instructions to add it to your Unity app. <!-- TODO: Need to add a link to where the Ultra Auth Plugin can be retrieved -->
+
+#### Ultra Manager
+
+The **splashState** scene contains a GameObject with the component **UltraManager** which is a singleton. This component is how the app manages user authentication with Ultra. Enable **Use Browser Login** in the editor on **UltraManager** if you want to authenticate via the browser instead of using the Ultra app. 
 
 ## Building
 
 1. Configure `brainCloud > Settings` to the correct Team and App. Your **Server URL** when logging in may not be on the **Default brainCloud Server** so be sure to use the correct URL if that is the case.
 
-2. Configure `Ultra > Settings` to use the correct **Authentication Url** and **Client Id**.
+2. Configure `Ultra > Settings` to use the correct **Authentication Url**, **Client Id**, and **Application Protocol**.
 
-You will not be able to log into the app until both **BrainCloudSettings** and **UltraSettings** are configured properly. Please read the documentation for the [brainCloud Unity/Csharp plugin](https://github.com/getbraincloud/braincloud-csharp) and the Ultra Auth Plugin on their official distribution platforms for more in-depth instructions.
+You will not be able to log into the app until both **BrainCloudSettings** and **UltraSettings** are configured properly. Please read the documentation for the [brainCloud Unity/Csharp plugin](https://github.com/getbraincloud/braincloud-csharp) and the Ultra Auth Plugin on their official distribution platforms for more in-depth instructions. <!-- TODO: Need to add a link to the Ultra Auth Plugin documentation -->
 
 All other **Player Settings** in Unity's **Build Settings** are set to what is recommended for this example app. **Windows** and **MacOS** are currently the only platforms supported.
 

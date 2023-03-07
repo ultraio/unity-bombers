@@ -8,5 +8,7 @@ namespace Ultraio
         public string authenticationUrl = PluginConfigurationConstants.DefaultAuthUrl;
         [Tooltip("Ultra OIDC Client Id")]
         public string clientId;
+        [Tooltip("Application Protocol")]
+        public string applicationProtocol = PluginConfigurationConstants.DefaultApplicationProtocol;
     }
 }

@@ -98,6 +98,7 @@ Thumbs.db
 *.lighting*
 /[Aa]ssets/[Bb]rain[Cc]loud/[Rr]esources/*
 /[Aa]ssets/[Bb]rain[Cc]loud/[Rr]esources.meta
+/[Aa]ssets/[Rr]esources/[Uu]ltra[Ss]ettings*
 AssetBundleServer.exe*
 FacebookSettings*
 steam_appid.txt

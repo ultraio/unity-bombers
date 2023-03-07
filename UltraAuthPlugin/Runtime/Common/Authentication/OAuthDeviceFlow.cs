@@ -16,6 +16,7 @@ namespace Ultraio
         private bool _authenticated = false;
         private string _authUrl = string.Empty;
         private string _clientId = string.Empty;
+        private string _applicationProtocol = string.Empty;
         private bool _useBrowser = false;
         private UltraToken _ultraToken;
         #endregion
@@ -28,8 +29,9 @@ namespace Ultraio
         /// <summary>Default constructor of OAuthDeviceFlow</summary>
         /// <param name="authUrl">The authentication server URL (OIDC compliant supporting the device grant flow)</param>
         /// <param name="clientId">Client id of the application</param>
+        /// <param name="applicationProtocol">The deeplink protocol used to communicate with the desktop application (use ultra for production)</param>
         /// <param name="useBrowser">Set to true to use the browser instead of the Ultra Client (default is false)</param>
-        public OAuthDeviceFlow(string authUrl, string clientId, bool useBrowser = false)
+        public OAuthDeviceFlow(string authUrl, string clientId, string applicationProtocol, bool useBrowser = false)
         {
             string error = null;
             if (string.IsNullOrEmpty(authUrl))
@@ -39,6 +41,10 @@ namespace Ultraio
             else if (string.IsNullOrEmpty(clientId))
             {
                 error = "clientId was null or empty";
+            }
+            else if (!useBrowser && string.IsNullOrEmpty(applicationProtocol))
+            {
+                error = "applicationProtocol cannot be empty if you don't use the browser for authentication";
             }
 
             if (error != null)
@@ -54,6 +60,7 @@ namespace Ultraio
             _authUrl = authUrl;
             _clientId = clientId;
             _useBrowser = useBrowser;
+            _applicationProtocol = applicationProtocol;
         }
 
         /// <summary>Initiate the OIDC Device Grant Flow</summary>
@@ -83,15 +90,8 @@ namespace Ultraio
 
         private void OpenVerificationDeepLink(string verificationUri)
         {
-            if (_useBrowser)
-            {
-                Application.OpenURL(verificationUri);
-            }
-            else
-            {
-                System.Diagnostics.Process.Start(DeepLinkConstants.Protocol + verificationUri);
-            }
-            
+            string prefix = _useBrowser ? string.Empty : string.Format(DeepLinkConstants.Protocol, _applicationProtocol);
+            System.Diagnostics.Process.Start(prefix + verificationUri);
         }
 
         private async Task<DeviceInfo> GetDeviceInfo()
@@ -108,10 +108,10 @@ namespace Ultraio
 
             if (response.IsSuccessStatusCode)
             {
-                var deviceInfo = JsonUtility.FromJson<DeviceInfo>(responseContent);
 #if !(DOT_NET)
                 Debug.Log($"INFO | Device Info result - {responseContent}");
-#endif                
+#endif     
+                var deviceInfo = JsonUtility.FromJson<DeviceInfo>(responseContent);           
                 return deviceInfo;
             }
             else
@@ -141,10 +141,10 @@ namespace Ultraio
 
                 if (response.IsSuccessStatusCode)
                 {
-                    ultraToken = JsonUtility.FromJson<UltraToken>(responseContent);
 #if !(DOT_NET)
                     Debug.Log($"INFO | Ultra Token - {responseContent}");
-#endif     
+#endif                         
+                    ultraToken = JsonUtility.FromJson<UltraToken>(responseContent);
                 }
                 else
                 {
@@ -189,10 +189,10 @@ namespace Ultraio
 
             if (response.IsSuccessStatusCode)
             {
-                var userInfo = JsonUtility.FromJson<UserInfo>(responseContent);
 #if !(DOT_NET)
                 Debug.Log($"INFO | User Info result - {responseContent}");
-#endif            
+#endif                  
+                var userInfo = JsonUtility.FromJson<UserInfo>(responseContent);          
                 return userInfo;
             }
             else
