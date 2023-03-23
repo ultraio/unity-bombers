@@ -221,23 +221,26 @@ namespace Gameframework
                 Debug.Log($"Received Blockchain items: {response}");
 
                 bool.TryParse(GConfigManager.GetStringValue("suppressDuplicateBomberSkins"), out bool suppressDuplicates);
-
+                suppressDuplicates = true;
                 var data = JsonReader.Deserialize<Dictionary<string, object>>(response)["data"] as Dictionary<string, object>;
                 var items = (data["response"] as Dictionary<string, object>)["items"] as Dictionary<string, object>[];
 
-                // Store the player's plane skins
-                for (int i = 0; i < items.Length; i++)
+                if (items != null)
                 {
-                    int factoryID = int.Parse((items[i]["json"] as Dictionary<string, object>)
-                                                       ["token_factory_id"].ToString());
-                    bool containsID = BlockchainItems.ContainsKey(factoryID);
-                    if (!suppressDuplicates && containsID)
+                    // Store the player's plane skins
+                    for (int i = 0; i < items.Length; i++)
                     {
-                        BlockchainItems[factoryID]++;
-                    }
-                    else if (!containsID)
-                    {
-                        BlockchainItems.Add(factoryID, 1);
+                        int factoryID = int.Parse((items[i]["json"] as Dictionary<string, object>)
+                                                           ["token_factory_id"].ToString());
+                        bool containsID = BlockchainItems.ContainsKey(factoryID);
+                        if (!suppressDuplicates && containsID)
+                        {
+                            BlockchainItems[factoryID]++;
+                        }
+                        else if (!containsID)
+                        {
+                            BlockchainItems.Add(factoryID, 1);
+                        }
                     }
                 }
 
@@ -314,8 +317,11 @@ namespace Gameframework
             };
 
             GCore.Wrapper.EntityService.UpdateSingleton(GBomberRTTConfigManager.PLANE_SKIN_ID.ToUpper(),
-                                                        statsJson.ToString(), aclJson.ToString(),
-                                                        m_PlayerSkinLatestVersion, onSuccess, onFailure);
+                                                        JsonWriter.Serialize(statsJson),
+                                                        JsonWriter.Serialize(aclJson),
+                                                        m_PlayerSkinLatestVersion,
+                                                        onSuccess,
+                                                        onFailure);
         }
 
         public void UpdatePlayerName(string in_name, SuccessCallback in_success = null, FailureCallback in_failure = null)
