@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using BrainCloud;
-using System.Globalization;
 using BrainCloudUNETExample;
 #if FACEBOOK_ENABLED
 using Facebook.Unity;
@@ -223,13 +222,14 @@ namespace Gameframework
 
                 bool.TryParse(GConfigManager.GetStringValue("suppressDuplicateBomberSkins"), out bool suppressDuplicates);
 
-                BrainCloud.LitJson.JsonData jsonData = BrainCloud.LitJson.JsonMapper.ToObject(response);
-                BrainCloud.LitJson.JsonData items = jsonData["data"]["response"]["items"];
+                var data = JsonReader.Deserialize<Dictionary<string, object>>(response)["data"] as Dictionary<string, object>;
+                var items = (data["response"] as Dictionary<string, object>)["items"] as Dictionary<string, object>[];
 
                 // Store the player's plane skins
-                for (int i = 0; i < items.Count; i++)
+                for (int i = 0; i < items.Length; i++)
                 {
-                    int factoryID = int.Parse(items[i]["json"]["token_factory_id"].ToString());
+                    int factoryID = int.Parse((items[i]["json"] as Dictionary<string, object>)
+                                                       ["token_factory_id"].ToString());
                     bool containsID = BlockchainItems.ContainsKey(factoryID);
                     if (!suppressDuplicates && containsID)
                     {
@@ -258,14 +258,13 @@ namespace Gameframework
         {
             SuccessCallback onSuccess = (string responseData, object cbObject) =>
             {
-                BrainCloud.LitJson.JsonData jsonData = BrainCloud.LitJson.JsonMapper.ToObject(responseData);
-                BrainCloud.LitJson.JsonData entry = jsonData["data"];
+                var data = JsonReader.Deserialize<Dictionary<string, object>>(responseData)["data"] as Dictionary<string, object>;
 
                 int planeID = PlaneScriptableObject.DEFAULT_SKIN_ID;
-                if (entry != null)
+                if (data != null)
                 {
-                    m_PlayerSkinLatestVersion = int.Parse(jsonData["data"]["version"].ToString());
-                    planeID = int.Parse(entry["data"][GBomberRTTConfigManager.PLANE_SKIN_ID].ToString());
+                    m_PlayerSkinLatestVersion = int.Parse(data["version"].ToString());
+                    planeID = int.Parse((data["data"] as Dictionary<string, object>)[GBomberRTTConfigManager.PLANE_SKIN_ID].ToString());
                 }
 
                 SetPlayerPlaneIDSkin(BlockchainItems.ContainsKey(planeID) ? planeID : PlaneScriptableObject.DEFAULT_SKIN_ID, onPlayerSkinRetrieved);
@@ -285,24 +284,23 @@ namespace Gameframework
         {
             planeID = BlockchainItems.ContainsKey(planeID) ? planeID : PlaneScriptableObject.DEFAULT_SKIN_ID;
 
-            BrainCloud.LitJson.JsonData statsJson = BrainCloud.LitJson.JsonMapper.ToJson(new Dictionary<string, object>
+            Dictionary<string, object> statsJson = new Dictionary<string, object>
             {
                 {GBomberRTTConfigManager.PLANE_SKIN_ID, planeID}
-            });
+            };
 
-            BrainCloud.LitJson.JsonData aclJson = BrainCloud.LitJson.JsonMapper.ToJson(new Dictionary<string, object>
+            Dictionary<string, object> aclJson = new Dictionary<string, object>
             {
                 {"other", 1 }
-            });
+            };
 
             SuccessCallback onSuccess = (string responseData, object cbObject) =>
             {
-                BrainCloud.LitJson.JsonData jsonData = BrainCloud.LitJson.JsonMapper.ToObject(responseData);
-                BrainCloud.LitJson.JsonData entry = jsonData["data"];
+                var data = JsonReader.Deserialize<Dictionary<string, object>>(responseData)["data"] as Dictionary<string, object>;
 
-                if (entry != null)
+                if (data != null)
                 {
-                    m_PlayerSkinLatestVersion = int.Parse(jsonData["data"]["version"].ToString());
+                    m_PlayerSkinLatestVersion = int.Parse(data["version"].ToString());
                 }
 
                 onPlayerSkinStored?.Invoke(planeID);
