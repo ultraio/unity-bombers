@@ -1,6 +1,6 @@
-using BrainCloud.LitJson;
+using BrainCloud.JsonFx.Json;
+using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -78,22 +78,24 @@ namespace Gameframework
         {
             if (string.IsNullOrEmpty(in_message)) return;
 
-            JsonData jsonData = JsonMapper.ToObject(in_message);
+            var message = JsonReader.Deserialize<Dictionary<string, object>>(in_message);
+            var data = message["data"] as Dictionary<string, object>;
 
             int factoryID = PlaneScriptableObject.DEFAULT_SKIN_ID;
-            string eventType = jsonData["operation"] != null ? (string)jsonData["operation"] : string.Empty;
+            string eventType = message["operation"] != null ? (string)message["operation"] : string.Empty;
             if (!string.IsNullOrEmpty(eventType) && eventType == "ITEM_EVENT")
             {
-                eventType = (string)jsonData["data"]["operation"];
-
-                switch(eventType)
+                eventType = (string)data["operation"];
+                switch (eventType)
                 {
                     case "INS":
                     case "UDP":
-                        factoryID = (int)jsonData["data"]["newJSON"]["object"]["token_factory_id"];
+                        factoryID = (int)((data["newJSON"] as Dictionary<string, object>)
+                                               ["object"] as Dictionary<string, object>)["token_factory_id"];
                         break;
                     case "REM":
-                        factoryID = (int)jsonData["data"]["oldJSON"]["object"]["token_factory_id"];
+                        factoryID = (int)((data["oldJSON"] as Dictionary<string, object>)
+                                               ["object"] as Dictionary<string, object>)["token_factory_id"];
                         break;
                     default:
                         break;

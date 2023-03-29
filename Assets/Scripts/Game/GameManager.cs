@@ -4,15 +4,14 @@
  * 
  */
 
-using UnityEngine;
+using BrainCloudUNETExample.Connection;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.UI;
-using BrainCloudUNETExample.Connection;
 using Gameframework;
 using TMPro;
-using BrainCloud.LitJson;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace BrainCloudUNETExample.Game
 {

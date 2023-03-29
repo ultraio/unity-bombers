@@ -1,9 +1,8 @@
-﻿using BrainCloud.LitJson;
-using Gameframework;
+﻿using Gameframework;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 #if FACEBOOK_ENABLED
 using Facebook.Unity;
 #endif
